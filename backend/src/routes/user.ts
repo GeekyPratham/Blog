@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign,verify,decode } from 'hono/jwt';
+import { signupInputs } from '@geekypratham/blog-common';
+
 
 export const userRouter =  new Hono<{
   Bindings:{
@@ -9,9 +11,11 @@ export const userRouter =  new Hono<{
     JWT_SECRET: string,
   }
 }>();
-    
+
+
 
 userRouter.post('/signup',async (c) => {
+
   console.log("user signup");
   console.log(c.env.DATABASE_URL);
   console.log(c.env.JWT_SECRET);
@@ -24,7 +28,14 @@ userRouter.post('/signup',async (c) => {
   console.log("after connecting to db");
   console.log(prisma);
   const userDetails = await c.req.json();
+  const {success} = signupInputs.safeParse(userDetails);
 
+  if(!success){
+    c.status(411);
+    return c.json({
+      message : "invalid user details"
+    })
+  }
   console.log(userDetails);
 
   // check if the request body has email and password
@@ -45,25 +56,26 @@ userRouter.post('/signup',async (c) => {
   if(alreadyExists) {
     return c.text('Email already in use', 403); // 403 for unauthorized access
   }
-  else {
-    // create a new user
+ 
+  // create a new user
 
-    // important notes in above where i have check in database for user belogs to this email is exist or not 
-    // if we dont do this check above then also it will below code detect error as in my structured databse (postgresql) there is unique constraint on email field so if we try to create a user with same email it will throw an error
+  // important notes in above where i have check in database for user belogs to this email is exist or not 
+  // if we dont do this check above then also it will below code detect error as in my structured databse (postgresql) there is unique constraint on email field so if we try to create a user with same email it will throw an error
     
-    const user = await prisma.user.create({
-      data:{
-        email: userDetails.email,
-        password: userDetails.password,
-        name: userDetails.name,
-      }
-    })
-  }
-
+  const user = await prisma.user.create({
+    data:{
+      email: userDetails.email,
+      password: userDetails.password,
+      name: userDetails.name,
+    }
+  })
+  
   // create a JWT token and return it
-
+  console.log(user)
+  console.log(user.id)
   const token = await sign({
-    email : userDetails.email,
+    id : user.id
+    
   },c.env.JWT_SECRET,);
 
   console.log(token);
@@ -115,9 +127,11 @@ userRouter.post('/signin',async (c) => {
     return c.text('Invalid email or password', 403); // 403 for unauthorized access
   }
   // create a JWT token and return it
-
+  console.log(alreadyExists.id)
+  console.log(alreadyExists.email)
+  // console.log(`${userDetails.id} is user ID`)
   const token = await sign({
-    email : userDetails.email,
+     id : alreadyExists.id
   },c.env.JWT_SECRET,);
 
   console.log(token);

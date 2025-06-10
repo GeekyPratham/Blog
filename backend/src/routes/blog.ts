@@ -9,6 +9,9 @@ export const blogRouter = new Hono<{
     DATABASE_URL: string,
     JWT_SECRET: string,
   }
+  Variables:{
+    userId : string,
+  }
 }>();
 
 // Middleware to check if the user is authenticated
@@ -52,24 +55,133 @@ export const blogRouter = new Hono<{
 blogRouter.use('/*', authMiddleware);
 
 
-blogRouter.post('/', (c) => {
-  return c.text('Hello Hono!')
+blogRouter.post('/',async (c) => {
+  const body = await c.req.json();
+
+  const userId = c.get("userId")
+  console.log(userId);
+  
+
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+  console.log("after connecting to db");
+  console.log(prisma);
+
+  try{
+    const blog = await prisma.post.create({
+      data: {
+        title : body.title,
+        content : body.content,
+        published : true,
+        authorId : userId,
+      }
+    })
+
+
+    return c.json({
+      id: blog.id,
+
+    })
+  }
+  catch(e){
+    c.status(411);
+    return c.json({
+      msg: "error while creating blog post"
+    })
+  }
 })
 
 
-blogRouter.put('/', (c) => {
-  return c.text('Hello Hono!')
+blogRouter.put('/', async(c) => {
+  const body = await c.req.json();
+  console.log("body", body);
+
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+  console.log("after connecting to db");
+  // console.log(prisma);
+
+  try{
+    
+    const blog = await prisma.post.update({
+      where : {
+        id : body.id
+      },
+      data: {
+        title : body.title,
+        content : body.content,
+        published : true,
+        authorId : c.get("userId"), // assuming the userId is set in the middleware
+
+
+      }
+    })
+
+    return c.json({
+      id: blog.id,
+      
+    })
+  }
+  catch(e){
+    console.log(e);
+    c.status(411);
+    return c.json({
+      msg: "error while updating blog post"
+    })
+  }
+  
+})
+
+// pagination ->in landing page only shows 10 blogs only after scroll or clicking on button then show next 10 
+
+blogRouter.get('/bulk', async(c) => {
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+
+  const posts = await prisma.post.findMany();
+
+  return c.json({
+    posts
+  })
+})
+
+blogRouter.get('/:id',async (c) => {
+  const body =  c.req.param('id');
+  console.log("body", body);
+
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+  console.log("after connecting to db");
+  console.log(prisma);
+
+  try{
+    const blog = await prisma.post.findFirst({
+      where: {
+        id : body
+      }
+    })
+    return c.json({
+      blog
+    })
+  }catch(e){
+    c.status(411);
+    return c.json({
+      msg: "error while fetching blog post"
+    })
+  }
+  
 })
 
 
-blogRouter.get('/:id', (c) => {
-  return c.text('Hello Hono!')
-})
 
-
-blogRouter.get('/bulk', (c) => {
-  return c.text('Hello Hono!')
-})
 
 
 

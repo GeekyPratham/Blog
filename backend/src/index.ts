@@ -1,10 +1,6 @@
 import { Hono } from 'hono'
-import { PrismaClient } from './generated/prisma/edge';
-import { withAccelerate } from '@prisma/extension-accelerate'
-import { sign,verify,decode } from 'hono/jwt';
 import { userRouter } from './routes/user';
 import { blogRouter } from './routes/blog';
-// import { authMiddleware } from './middlewares/auth';
 
 const app = new Hono<{
   Bindings:{
