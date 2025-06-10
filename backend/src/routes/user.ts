@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign,verify,decode } from 'hono/jwt';
-import { signupInputs } from '@geekypratham/blog-common';
+import { signupInputs, signinInputs } from '@geekypratham/blog-common';
 
 
 export const userRouter =  new Hono<{
@@ -105,6 +105,15 @@ userRouter.post('/signin',async (c) => {
   const userDetails = await c.req.json();
 
   console.log(userDetails);
+
+  const {success} = signinInputs.safeParse(userDetails);
+
+  if(!success){
+    c.status(411);
+    return c.json({
+      message : "invalid user details"
+    })
+  }
 
   // check if the request body has email and password
   if (!userDetails.email || !userDetails.password) {
