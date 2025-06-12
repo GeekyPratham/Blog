@@ -84,9 +84,10 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
               result.data
             ).then((res) => { 
               console.log("Response from server:", res.data);
-              if (res.data.success) {
+              console.log("getting data");
+              if (res.data.token) {
                 // Successfully signed up or signed in
-                
+
                 navigate("/blog");
               } else {
                 // Handle error from server

@@ -26,7 +26,7 @@ userRouter.post('/signup',async (c) => {
   }).$extends(withAccelerate());
 
   console.log("after connecting to db");
-  console.log(prisma);
+  // console.log(prisma);
   const userDetails = await c.req.json();
   const {success} = signupInputs.safeParse(userDetails);
 
@@ -61,7 +61,7 @@ userRouter.post('/signup',async (c) => {
 
   // important notes in above where i have check in database for user belogs to this email is exist or not 
   // if we dont do this check above then also it will below code detect error as in my structured databse (postgresql) there is unique constraint on email field so if we try to create a user with same email it will throw an error
-    
+  console.log("creating user");
   const user = await prisma.user.create({
     data:{
       email: userDetails.email,
