@@ -13,7 +13,7 @@ const app = new Hono<{
   }
 }>()
 
-app.use('/api/*', cors());
+app.use('/*', cors());
 
 /** 
  * This is a simple blog API
