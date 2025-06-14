@@ -155,12 +155,31 @@ blogRouter.put('/', async(c) => {
 // pagination ->in landing page only shows 10 blogs only after scroll or clicking on button then show next 10 
 
 blogRouter.get('/bulk', async(c) => {
+  console.log("inside blog bulk route");
+  
+  // console.log("token", c.req.header('Authorization'));
+
   const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
       
   }).$extends(withAccelerate());
 
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany(
+    {
+      select: {
+        title: true,
+        content: true,
+        // published: true,
+        id: true,
+        author:{
+          select:{
+            name: true,
+
+          }
+        }
+      }
+    }
+  );
 
   return c.json({
     posts
@@ -182,6 +201,18 @@ blogRouter.get('/:id',async (c) => {
     const blog = await prisma.post.findFirst({
       where: {
         id : body
+      },
+      select:{
+        title:true,
+        id:true,
+        content:true,
+        published:true,
+        author:{
+          select:{
+            name:true,
+            
+          }
+        }
       }
     })
     return c.json({

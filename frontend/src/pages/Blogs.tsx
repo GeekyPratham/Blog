@@ -1,7 +1,7 @@
 import App from "../App";
 import { AppBar } from "../components/AppBar";
 import { BlogCard } from "../components/BlogCard"
-import { useBlogs } from "../hooks/useBlogs"
+import { useBlogs } from "../hooks/UseBlogs"
 
 
 export const Blogs = () => {
@@ -33,32 +33,21 @@ export const Blogs = () => {
         
             <h1 className="text-3xl md:text-4xl font-bold text-blue-300 mb-10">Latest Blogs</h1>
 
-            <BlogCard
-                avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-                authorName="PrathamRaj"
-                title="My first blog"
-                content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, magni neque! Labore sint rem, perspiciatis deleniti eius quibusdam aliquam! Asperiores, laudantium perspiciatis."
-                publishedDate="12/06/2025"
-                imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-            />
-
-            <BlogCard
-                avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-                authorName="PrathamRaj"
-                title="Exploring React Components"
-                content="React components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontendsReact components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontendsReact components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontends."
-                publishedDate="12/06/2025"
-                imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-            />
-
-            <BlogCard
-                avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-                authorName="PrathamRaj"
-                title="Why TypeScript is Awesome"
-                content="TypeScript helps catch bugs early through its static typing system and provides better IDE support. Here's why you should consider using it in your next projectReact components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontendsReact components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontendsReact components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontendsReact components are the building blocks of any React application. Understanding their structure and behavior is crucial for building scalable frontends."
-                publishedDate="12/06/2025"
-                imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-            />
+            {blogs.map(blog  =>{
+                return(
+                    <BlogCard 
+                        key={blog.id}
+                        id={blog.id}
+                        authorName={blog.authorName}
+                        title={blog.title}
+                        content={blog.content}
+                        publishedDate={new Date(blog.publishedDate).toLocaleDateString()}
+                        imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
+                        avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
+                        tag={blog.tag}
+                    />
+                )
+            })}
         </div>
     </div>
   );
