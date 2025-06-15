@@ -21,12 +21,14 @@ export const Blog = () =>{
             );
         }
         if(!blog){
+            console.log("BLOG NOT FOUND");
             return (
                 <div className="flex items-center justify-center min-h-screen bg-gray-800">
                     <div className="text-white text-2xl">No Blogs Found</div>
                 </div>
             );
         }
+        console.log("Blog route page");
         console.log(blog);
         return (
             <div>

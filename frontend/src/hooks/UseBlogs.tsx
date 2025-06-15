@@ -21,7 +21,7 @@ export const useBlog = ( id:string ) =>{
 
     const [loading, setLoading] = useState<boolean>(true);
     const [blog,setBlog] = useState<BlogCardProps>();
-    console.log(blog)
+      
     console.log("hello from useBlog hook");
     console.log("id")
     console.log(`${id}`)

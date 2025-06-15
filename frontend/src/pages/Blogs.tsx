@@ -1,4 +1,4 @@
-import App from "../App";
+
 import { AppBar } from "../components/AppBar";
 import { BlogCard } from "../components/BlogCard"
 import { useBlogs } from "../hooks/UseBlogs"
