@@ -31,7 +31,7 @@ export const Blog = () =>{
         console.log("Blog route page");
         console.log(blog);
         return (
-            <div>
+            <div >
                 <div>
                     <AppBar userName="Pratham Raj" imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
                 </div>

@@ -1,10 +1,9 @@
 import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { BACKEND_URL } from "../../config";
 
 
 interface BlogCardProps {
-  id:string;
+  id: string;
   authorName: string;
   title: string;
   content: string;
@@ -25,14 +24,12 @@ export const BlogCard = ({
   tag = "General",
 }: BlogCardProps) => {
   return (
-    <Link  to={`/blog/${id}`}
-            state={{ id }}
-      >
-        <div className="flex cursor-pointer justify-between items-start border-b border-gray-700 pb-6 mb-6 max-w-4xl bg-gray-900 text-gray-100 rounded-xl p-4 shadow-md shadow-violet-500/10 hover:shadow-violet-400/20 cursor-pointer transition duration-300 ">
+    <Link to={`/blog/${id}`} state={{ id }}>
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-1 border border-gray-800 p-4 sm:p-6 rounded-xl bg-gray-900 text-gray-100 shadow-lg hover:shadow-purple-400/20 transition-all duration-300 ">
         {/* Left Section */}
-        <div className="flex flex-col flex-1 pr-4">
+        <div className="flex-1 flex flex-col gap-2">
           {/* Author Info */}
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+          <div className="flex items-center gap-2 text-sm text-gray-400">
             {avatarUrl && (
               <img
                 src={avatarUrl}
@@ -46,15 +43,15 @@ export const BlogCard = ({
           </div>
 
           {/* Title and Description */}
-          <h2 className="text-lg font-bold text-blue-300 leading-tight hover:text-blue-400 transition">
+          <h2 className="text-lg sm:text-xl font-semibold text-blue-300 hover:text-blue-400 transition">
             {title}
           </h2>
-          <p className="text-gray-300 text-sm mt-2 line-clamp-2">
+          <p className="text-gray-300 text-sm sm:text-base mt-1 line-clamp-2">
             {content.substring(0, 200) + "..."}
           </p>
 
           {/* Tag and Read Time */}
-          <div className="flex items-center gap-3 text-xs mt-3">
+          <div className="flex items-center flex-wrap gap-3 text-xs sm:text-sm mt-2">
             <span className="bg-green-700 text-green-200 px-2 py-1 rounded-full font-medium">
               {tag}
             </span>
@@ -62,11 +59,9 @@ export const BlogCard = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-3 flex gap-6 text-sm">
+          <div className="mt-3 flex flex-wrap gap-4 text-sm">
             <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition">
-              <ThumbsUp className="w-4 h-4" onClick={()=>{
-                  
-              }}/>
+              <ThumbsUp className="w-4 h-4" />
               Like
             </button>
             <button className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition">
@@ -82,13 +77,14 @@ export const BlogCard = ({
 
         {/* Right Side Image */}
         {imageUrl && (
-          <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg border border-gray-700">
+          <div className=" flex items-center p-1 sm:w-30 h-full rounded-lg border border-gray-700">
             <img
               src={imageUrl}
               alt="Blog"
-              className="w-full h-full object-cover"
+              className="w-full h-full  object-cover rounded-lg shadow-md transition-transform transform hover:scale-105"
             />
           </div>
+
         )}
       </div>
     </Link>
