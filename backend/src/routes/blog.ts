@@ -75,18 +75,21 @@ blogRouter.post('/',async (c) => {
       
   }).$extends(withAccelerate());
   console.log("after connecting to db");
-  console.log(prisma);
+  // console.log(prisma);
 
   try{
     const blog = await prisma.post.create({
       data: {
         title : body.title,
         content : body.content,
+        tag : body.tag,
+        images : body.images || [], // assuming images is an array of strings (URLs)
         published : true,
+        createdAt : new Date().toISOString(), // setting the current date as createdAt
         authorId : userId,
       }
     })
-
+    console.log("blog created", blog);
 
     return c.json({
       id: blog.id,
@@ -130,7 +133,10 @@ blogRouter.put('/', async(c) => {
       data: {
         title : body.title,
         content : body.content,
+        tag : body.tag,
+        images : body.images || [],
         published : true,
+        createdAt : new Date().toISOString(), 
         authorId : c.get("userId"), // assuming the userId is set in the middleware
 
 
@@ -169,7 +175,10 @@ blogRouter.get('/bulk', async(c) => {
       select: {
         title: true,
         content: true,
-        // published: true,
+        published: true,
+        tag: true,
+        images: true,
+        createdAt: true,
         id: true,
         author:{
           select:{
@@ -195,7 +204,7 @@ blogRouter.get('/:id',async (c) => {
       
   }).$extends(withAccelerate());
   console.log("after connecting to db");
-  console.log(prisma);
+  // console.log(prisma);
 
   try{
     const blog = await prisma.post.findFirst({
@@ -203,10 +212,13 @@ blogRouter.get('/:id',async (c) => {
         id : body
       },
       select:{
-        title:true,
-        id:true,
-        content:true,
-        published:true,
+        title: true,
+        content: true,
+        published: true,
+        tag: true,
+        images: true,
+        createdAt: true,
+        id: true,
         author:{
           select:{
             name:true,
