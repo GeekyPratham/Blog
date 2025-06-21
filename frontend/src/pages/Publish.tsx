@@ -3,51 +3,57 @@ import {  X,Paperclip } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useRef , useState } from "react";
 import axios from "axios";
+import { BACKEND_URL } from "../../config";
 export const Publish = () => {
     const [title,setTitle] = useState<string>("");
     const [content,setContent] = useState<string>("");
     const [tag , setTag] = useState<string>("");
-    const [selectedImages, setSelectedImages] = useState<File[]>([]);
-    
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);// for displaying the selected images 
+    const [loading , setLoading] = useState<boolean>(false);
+    const [imageUrl,setImageUrl] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
 
     const navigate = useNavigate();
 
-    const handlePublish = () =>{
-        // Here you can handle the publish logic, e.g., send the data to a server
-        console.log("Title:", title);
-        console.log("Content:", content);
-        console.log("Tag:", tag);
-        console.log("Selected Images:", selectedImages);
-        
-        // Reset the form after publishing
-        setTitle("");
-        setContent("");
-        setTag("");
-        setSelectedImages([]);
-        try{
-            const formData = new FormData();
-            formData.append("title", title);
-            formData.append("content", content);
-            formData.append("tag", tag);
-            selectedImages.forEach((image, index) => {
-                formData.append(`image_${index}`, image);
+    const handlePublish = async () => {
+        try {
+            console.log("Publishing blog with JSON payload");
+            const response = await axios.post(`${BACKEND_URL}/api/v1/blog`, {
+            title,
+            content,
+            tag,
+            images: imageUrl
+            }, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
             });
-            // Send the form data to the server
-            axios.post("https://backend.kprathamraj2021.workers.dev/api/v1/", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            .then((response) => {
-                console.log("Blog published successfully:", response.data);
-                // Redirect to the blogs page or show a success message
-                navigate("/blogs");
-            })
-        }catch(error) {
+
+            console.log("Blog published successfully:", response.data);
+            setTitle("");
+            setContent("");
+            setTag("");
+            setSelectedImages([]);
+            setImageUrl([]);
+            setLoading(false);
+            navigate("/blogs");
+        } catch (error) {
             console.error("Error publishing blog:", error);
         }
+    };
+
+    if(loading){
+        return (
+            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
+
+                <div className="flex items-center justify-center h-screen">
+                    <div className="text-white text-2xl">Loading...</div>
+                </div>
+                
+            </div>
+        )
     }
-    return (
+    else return (
         <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
             <div className="overflow-hidden">
                 <AppBar userName="Pratham Raj" imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
@@ -61,7 +67,7 @@ export const Publish = () => {
                 </h1>
 
                 <div className="w-full max-w-7xl  rounded-lg shadow-lg">
-                    <input className="w-full  p-5  bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" type="text" placeholder="Title" onChange={(e)=>{
+                    <input className="w-full  p-5  bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500" type="text" placeholder="Title" value={title} onChange={(e)=>{
                         setTitle(e.target.value)
                     }} />
                 </div>  
@@ -74,6 +80,10 @@ export const Publish = () => {
                         setTag={setTag}
                         selectedImages={selectedImages}
                         setSelectedImages={setSelectedImages}
+                        loading={loading}
+                        setLoading={setLoading}
+                        imageUrl={imageUrl}
+                        setImageUrl={setImageUrl}
                     />
                     
                 </div>
@@ -86,31 +96,61 @@ export const Publish = () => {
     )
 }
 
-function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages}:{
+function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,loading,setLoading,imageUrl,setImageUrl}:{
     content:string;
     setContent: (value: string) => void;
     tag:string;
     setTag: (value: string) => void;
     selectedImages: File[];
     setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
+    loading:boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    imageUrl: File[];
+    setImageUrl: React.Dispatch<React.SetStateAction<File[]>>;
+
 }) {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     
 
     const handleIconClick = () =>{
+        console.log(fileInputRef.current);
         if(fileInputRef.current){
             fileInputRef.current.click();
         }
     }
-    const handleFileChange = (e) =>{
+    const handleFileChange = async(e) =>{
         const file = e.target.files[0];
-        
+        console.log("File changed:", file);
+        if(!file){
+            console.log("No file is selected")
+            return;
+        }
         if(file){
             console.log("File selected:", file.name);
-            
-            // we can handle the file upload here, e.g., send it to a server or process it
-            setSelectedImages((prevImages: File[]) => [...prevImages, file]);
+            // post the imgae to cloudinary or get the url of the image or file
+            setLoading(true);
+
+            try{
+                const formData = new FormData();
+                formData.append("file",file);
+                formData.append("upload_preset","BlogImages");
+                formData.append("cloud_name","db0hcdu39");
+                
+                const res = await axios.post("https://api.cloudinary.com/v1_1/db0hcdu39/image/upload",formData)
+                console.log("Image uploaded successfully:", res.data.url);
+                
+                // we can handle the file upload here, e.g., send it to a server or process it
+                setSelectedImages((prevImages: File[]) => [...prevImages, file]);
+
+                setImageUrl((prevImages: File[]) => [...prevImages, file]);
+
+            }
+            catch(e){
+                alert("Image upload failed");
+                console.error(e);
+            }
+            setLoading(false);
         }
     }
        
@@ -121,9 +161,10 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                 <textarea   
                 className="w-full h-70 p-2 "
                 placeholder="Write your blog content here..."
+                value={content}
                 onChange={(e) => setContent(e.target.value)}
                 ></textarea>
-                <input  className="mx-w[50] sm:w-50 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 p-1  " type="text"
+                <input  className="mx-w[50] sm:w-50 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 p-1  " type="text" value={tag}
                     onChange={(e)=>{setTag(e.target.value)}}  placeholder="    Important Tag" />
                 <div className="flex flex-col gap-4 overflow-hidden">
                     
@@ -143,9 +184,10 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                                 <X
                                 size={16}
                                 className="absolute -top-2 -right-2 bg-green-600 text-white rounded-full p-0.5 cursor-pointer hover:bg-red-500"
-                                onClick={() =>
-                                    setSelectedImages((prev) => prev.filter((_, i) => i !== index))
-                                }
+                                onClick={() => {
+                                    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+                                    setImageUrl((prev) => prev.filter((_, i) => i !== index));
+                                }}
                                 />
                             </div>
                         ))}

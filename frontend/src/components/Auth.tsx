@@ -66,11 +66,11 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
             // Handle form submission here
 
             const schema = type === "Signup" ? signupInputs : signinInputs;
-            const result = schema.safeParse(postInputs);
+            const result = schema.safeParse(postInputs);// Validate the data using Zod does not need to send request to backend for validation
 
-            if (!result.success) {
+            if (!result.success) { 
               setError(result.error.issues[0].message);
-              alert("incorrect user details");
+              // alert("incorrect user details");
               return;
             }
 
@@ -96,8 +96,8 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
               }
             }).catch((err) => {
               console.error("Error during request:", err);
-
-              setError("An error occurred while processing your request");
+              console.log(err.response.data)
+              setError(err.response.data || "An error occurred");
             });
 
            

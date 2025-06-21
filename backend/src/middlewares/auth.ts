@@ -28,7 +28,8 @@ export const authMiddleware : MiddlewareHandler = async (c,next) => {
     console.log(token)
     try{
         const user = await verify(token, c.env.JWT_SECRET);
-        console.log(user);
+        console.log("user",user);
+        
         if(!user || !user.id) {
             return c.json({
                 error: 'Unauthorized',
@@ -36,6 +37,7 @@ export const authMiddleware : MiddlewareHandler = async (c,next) => {
             }, 401);
         }
         c.set("userId", user.id);
+     
         return await next();
     }
     catch (error) {

@@ -107,7 +107,7 @@ userRouter.post('/signin',async (c) => {
   console.log(userDetails);
 
   const {success} = signinInputs.safeParse(userDetails);
-
+ 
   if(!success){
     c.status(411);
     return c.json({
@@ -117,6 +117,7 @@ userRouter.post('/signin',async (c) => {
 
   // check if the request body has email and password
   if (!userDetails.email || !userDetails.password) {
+    console.log("Email and password not exits");
     return c.text('Email and password are required', 400);
   }
 
