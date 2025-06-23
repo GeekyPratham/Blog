@@ -4,25 +4,31 @@ import { Link } from "react-router-dom";
 
 interface BlogCardProps {
   id: string;
-  authorName: string;
+  author?: {
+    name: string;
+  };
   title: string;
   content: string;
   publishedDate: string;
-  imageUrl?: string;
+  images: string[];
   avatarUrl?: string;
   tag?: string;
 }
 
 export const BlogCard = ({
   id,
-  authorName,
+  author,
   title,
   content,
   publishedDate,
-  imageUrl,
+  images,
   avatarUrl,
   tag = "General",
 }: BlogCardProps) => {
+
+
+  console.log("images", images);
+  console.log("author", author);  
   return (
     <Link to={`/blog/${id}`} state={{ id }}>
       <div className="flex flex-col sm:flex-row justify-between items-start gap-1 border border-gray-800 p-4 sm:p-6 rounded-xl bg-gray-900 text-gray-100 shadow-lg hover:shadow-purple-400/20 transition-all duration-300 ">
@@ -37,7 +43,7 @@ export const BlogCard = ({
                 className="w-6 h-6 rounded-full border border-violet-500"
               />
             )}
-            <span className="font-medium text-green-400">{authorName}</span>
+            <span className="font-medium text-green-400">{author?.name}</span>
             <span className="text-purple-400">•</span>
             <span>{publishedDate}</span>
           </div>
@@ -76,10 +82,11 @@ export const BlogCard = ({
         </div>
 
         {/* Right Side Image */}
-        {imageUrl && (
+        {images && (
+          
           <div className=" flex items-center p-1 sm:w-30 h-full rounded-lg border border-gray-700">
             <img
-              src={imageUrl}
+              src={images[0]}
               alt="Blog"
               className="w-full h-full  object-cover rounded-lg shadow-md transition-transform transform hover:scale-105"
             />

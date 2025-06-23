@@ -85,7 +85,7 @@ blogRouter.post('/',async (c) => {
         title : body.title,
         content : body.content,
         tag : body.tag,
-        images : body.imageUrl || [], // assuming images is an array of strings (URLs)
+        images : body.images || [], // assuming images is an array of strings (URLs)
         published : true,
         createdAt : new Date().toISOString(), // setting the current date as createdAt
         authorId : userId,
@@ -136,7 +136,7 @@ blogRouter.put('/', async(c) => {
         title : body.title,
         content : body.content,
         tag : body.tag,
-        images : body.imageUrl || [],
+        images : body.images || [],
         published : true,
         createdAt : new Date().toISOString(), 
         authorId : c.get("userId"), // assuming the userId is set in the middleware

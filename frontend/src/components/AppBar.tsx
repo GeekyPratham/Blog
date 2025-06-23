@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 interface AppBarProps {
   userName: string;
-  imageUrl: string;
+  avatarUrl: string;
 }
 
-export const AppBar = ({ userName, imageUrl }: AppBarProps) => {
+export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
   const navigate = useNavigate();
   return (
     <div className=" w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white py-4 px-6 shadow-md flex flex-wrap justify-between items-center l">
@@ -22,7 +22,7 @@ export const AppBar = ({ userName, imageUrl }: AppBarProps) => {
           Published
         </button>
         <img
-          src={imageUrl}
+          src={avatarUrl}
           alt="User Avatar"
           className="w-9 h-9 rounded-full border-2 border-violet-500 shadow-md"
         />

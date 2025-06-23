@@ -33,7 +33,7 @@ export const Blog = () =>{
         return (
             <div >
                 <div>
-                    <AppBar userName="Pratham Raj" imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
+                    <AppBar userName="Pratham Raj" avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
                 </div>
         
                 <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 py-10 px-4 flex flex-col items-center">

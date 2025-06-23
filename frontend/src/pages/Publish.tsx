@@ -11,7 +11,8 @@ export const Publish = () => {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);// for displaying the selected images 
     const [loading , setLoading] = useState<boolean>(false);
     const [imageUrl,setImageUrl] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
-
+    console.log("images from publish");
+    console.log(imageUrl)
     const navigate = useNavigate();
 
     const handlePublish = async () => {
@@ -30,11 +31,7 @@ export const Publish = () => {
             });
 
             console.log("Blog published successfully:", response.data);
-            setTitle("");
-            setContent("");
-            setTag("");
-            setSelectedImages([]);
-            setImageUrl([]);
+           
             setLoading(false);
             navigate("/blogs");
         } catch (error) {
@@ -56,7 +53,7 @@ export const Publish = () => {
     else return (
         <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
             <div className="overflow-hidden">
-                <AppBar userName="Pratham Raj" imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
+                <AppBar userName="Pratham Raj" avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
             </div>
 
             <div  className="h-full  flex flex-col gap-5 items-center">
@@ -105,8 +102,8 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
     setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
     loading:boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    imageUrl: File[];
-    setImageUrl: React.Dispatch<React.SetStateAction<File[]>>;
+    imageUrl: string[];
+    setImageUrl: React.Dispatch<React.SetStateAction<string[]>>;
 
 }) {
 
@@ -143,7 +140,8 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                 // we can handle the file upload here, e.g., send it to a server or process it
                 setSelectedImages((prevImages: File[]) => [...prevImages, file]);
 
-                setImageUrl((prevImages: File[]) => [...prevImages, file]);
+                setImageUrl((prevImages: string[]) => [...prevImages, res.data.url]);
+                // console.log(imageUrl)
 
             }
             catch(e){
