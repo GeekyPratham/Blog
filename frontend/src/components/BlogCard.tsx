@@ -9,7 +9,7 @@ interface BlogCardProps {
   };
   title: string;
   content: string;
-  publishedDate: string;
+  createdAt: string;
   images: string[];
   avatarUrl?: string;
   tag?: string;
@@ -20,7 +20,7 @@ export const BlogCard = ({
   author,
   title,
   content,
-  publishedDate,
+  createdAt,
   images,
   avatarUrl,
   tag = "General",
@@ -45,7 +45,7 @@ export const BlogCard = ({
             )}
             <span className="font-medium text-green-400">{author?.name}</span>
             <span className="text-purple-400">•</span>
-            <span>{publishedDate}</span>
+            <span>{createdAt.slice(0,10)}</span>
           </div>
 
           {/* Title and Description */}

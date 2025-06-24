@@ -10,9 +10,9 @@ export const Publish = () => {
     const [tag , setTag] = useState<string>("");
     const [selectedImages, setSelectedImages] = useState<File[]>([]);// for displaying the selected images 
     const [loading , setLoading] = useState<boolean>(false);
-    const [imageUrl,setImageUrl] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
+    const [images,setimages] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
     console.log("images from publish");
-    console.log(imageUrl)
+    console.log(images)
     const navigate = useNavigate();
 
     const handlePublish = async () => {
@@ -22,7 +22,7 @@ export const Publish = () => {
             title,
             content,
             tag,
-            images: imageUrl
+            images: images
             }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -79,8 +79,8 @@ export const Publish = () => {
                         setSelectedImages={setSelectedImages}
                         loading={loading}
                         setLoading={setLoading}
-                        imageUrl={imageUrl}
-                        setImageUrl={setImageUrl}
+                        images={images}
+                        setimages={setimages}
                     />
                     
                 </div>
@@ -93,7 +93,7 @@ export const Publish = () => {
     )
 }
 
-function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,loading,setLoading,imageUrl,setImageUrl}:{
+function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,loading,setLoading,images,setimages}:{
     content:string;
     setContent: (value: string) => void;
     tag:string;
@@ -102,8 +102,8 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
     setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
     loading:boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    imageUrl: string[];
-    setImageUrl: React.Dispatch<React.SetStateAction<string[]>>;
+    images: string[];
+    setimages: React.Dispatch<React.SetStateAction<string[]>>;
 
 }) {
 
@@ -137,11 +137,8 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                 const res = await axios.post("https://api.cloudinary.com/v1_1/db0hcdu39/image/upload",formData)
                 console.log("Image uploaded successfully:", res.data.url);
                 
-                // we can handle the file upload here, e.g., send it to a server or process it
-                setSelectedImages((prevImages: File[]) => [...prevImages, file]);
-
-                setImageUrl((prevImages: string[]) => [...prevImages, res.data.url]);
-                // console.log(imageUrl)
+                setSelectedImages((prev) => [ file,...prev,]);
+                setimages((prev) => [ res.data.url,...prev,]);
 
             }
             catch(e){
@@ -162,8 +159,7 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 ></textarea>
-                <input  className="mx-w[50] sm:w-50 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 p-1  " type="text" value={tag}
-                    onChange={(e)=>{setTag(e.target.value)}}  placeholder="    Important Tag" />
+                <input  className="mx-w[50] sm:w-50 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 p-1  " type="text" value={tag} onChange={(e)=>{setTag(e.target.value)}}  placeholder="    Important Tag" />
                 <div className="flex flex-col gap-4 overflow-hidden">
                     
 
@@ -184,7 +180,7 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                                 className="absolute -top-2 -right-2 bg-green-600 text-white rounded-full p-0.5 cursor-pointer hover:bg-red-500"
                                 onClick={() => {
                                     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-                                    setImageUrl((prev) => prev.filter((_, i) => i !== index));
+                                    setimages((prev) => prev.filter((_, i) => i !== index));
                                 }}
                                 />
                             </div>

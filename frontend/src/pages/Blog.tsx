@@ -31,20 +31,18 @@ export const Blog = () =>{
         console.log("Blog route page");
         console.log(blog);
         return (
-            <div >
-                <div>
+            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-4 sm:p-6 md:p-10 overflow-x-hidden">
+                
+                <div className="overflow-hidden">
                     <AppBar userName="Pratham Raj" avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
                 </div>
+            
         
-                <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 py-10 px-4 flex flex-col items-center">
+                <div  className="h-full  flex flex-col gap-5 items-center">
                 
-                 
-                    
-                    return(
-                        <FullSingleBlog 
+                    <FullSingleBlog 
                             blog = {blog}
-                        />
-                    )
+                    />
                     
                 </div>
             </div>

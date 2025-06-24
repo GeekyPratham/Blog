@@ -1,31 +1,33 @@
-import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
+import { useState } from "react";
+import { ThumbsUp, MessageCircle, Share2, X } from "lucide-react";
 
 interface FullSingleBlogProps {
   blog: {
     id: string;
-    authorName: string;
+    author?: {
+      name: string;
+    };
     title: string;
     content: string;
-    publishedDate: string;
-    imageUrl?: string;
+    createdAt: string;
+    images: string[];
     avatarUrl?: string;
     tag?: string;
   };
 }
 
 export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  
   if (!blog) return <div className="text-white">No blog data available.</div>;
-  console.log("FullSingleBlog");
-  console.log(blog);
+
   const {
-    authorName,
+    author,
     title,
     content,
-    publishedDate,
-    avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg",
-    imageUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg",
+    createdAt,
+    avatarUrl = "https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg",
+    images,
     tag = "General",
   } = blog;
 
@@ -34,10 +36,10 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
       <div className="flex flex-col lg:flex-row justify-between gap-8 border-b border-gray-700 pb-8 mb-8 bg-gray-900 rounded-2xl shadow-lg shadow-violet-500/10 p-6 lg:p-8">
         {/* Blog Content */}
         <div className="flex-1">
-          <h1 className="text-4xl lg:text-5xl font-bold text-blue-300 mb-4 break-words">
+          <h1 className="min-h[60] text-4xl lg:text-5xl font-bold text-blue-300 mb-4 break-words">
             {title}
           </h1>
-          <p className="text-sm text-gray-400 mb-6">Posted on {publishedDate}</p>
+          <p className="text-sm text-gray-400 mb-6">Posted on {createdAt.slice(0,10)}</p>
 
           <p className="text-lg lg:text-xl text-gray-200 leading-relaxed whitespace-pre-line">
             {content}
@@ -82,7 +84,7 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
               />
             )}
             <div>
-              <h3 className="text-xl font-semibold text-white">{authorName}</h3>
+              <h3 className="text-xl font-semibold text-white">{author?.name}</h3>
               <p className="text-gray-400 text-sm">
                 Master of mirth, purveyor of puns, and the funniest person in the kingdom.
               </p>
@@ -91,14 +93,41 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
         </div>
       </div>
 
-      {/* Blog Image */}
-      {imageUrl && (
-        <div className="rounded-xl overflow-hidden mt-8 border border-gray-700">
-          <img
-            src={imageUrl}
-            alt="Blog Visual"
-            className="w-full h-auto object-cover"
-          />
+      {/* Image Gallery */}
+      {images?.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
+          {images.map((img, index) => (
+            <div
+              key={index}
+              className="relative w-full aspect-video bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-700 cursor-pointer"
+              onClick={() => setSelectedImage(img)}
+            >
+              <img
+                src={img}
+                alt={`Blog Image ${index + 1}`}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
+          <div className="relative w-[80vw] max-w-5xl h-[80vh]">
+            <img
+              src={selectedImage}
+              alt="Preview"
+              className="w-full h-full object-contain rounded-lg shadow-xl"
+            />
+            <button
+              className="absolute top-2 right-2 text-white bg-red-600 hover:bg-red-500 p-1 rounded-full"
+              onClick={() => setSelectedImage(null)}
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
       )}
     </div>
