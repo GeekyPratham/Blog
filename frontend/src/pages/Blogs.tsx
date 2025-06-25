@@ -1,10 +1,22 @@
+import { useNavigate } from "react-router-dom";
 import { AppBar } from "../components/AppBar";
 import { BlogCard } from "../components/BlogCard";
 import { BlogSkeleton } from "../components/BlogSkeleton";
 import { useBlogs } from "../hooks/UseBlogs";
+import { useEffect } from "react";
+
 
 export const Blogs = () => {
   const { loading, blogs } = useBlogs();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("token") === null) {
+      setTimeout(() => {
+        navigate("/signin");
+      }, 2000);
+    }
+  },[loading,navigate]);
 
   if (loading) {
     return (
@@ -15,7 +27,7 @@ export const Blogs = () => {
       </div>
     );
   }
-
+  
   if (!blogs || blogs.length === 0) {
     return (
       <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-4 sm:p-6 md:p-10 overflow-x-hidden">

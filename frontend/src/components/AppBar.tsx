@@ -2,7 +2,8 @@
 import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
 import { useState } from "react";
-import { Hamburger } from "./Hamburger"; 
+import { X } from "lucide-react";
+// import { Hamburger } from "./Hamburger"; 
 import { Ham } from "lucide-react";
 interface AppBarProps {
   userName: string;
@@ -35,14 +36,33 @@ export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
             setHamburgerOpen(true);
           }}
         />
-        {
-          isHamburgerOpen && (
-            <div className="absolute top-16 right-10 bg-gray-800 rounded_lg shadow-lg p-4 z-50">
-              
+        {isHamburgerOpen && (
+        <>
+          {/*  Background Blur Overlay */}
+          <div
+            className="fixed inset-0 backdrop-blur-sm z-40"
+            onClick={() => setHamburgerOpen(false)}
+          ></div>
+
+          {/* Hamburger Menu Box with Animation */}
+          <div className="fixed top-24 right-6 sm:right-20 w-48 sm:w-52 bg-green-700 rounded-lg shadow-lg z-50 transform scale-95 sm:scale-100 transition-all duration-300 ease-out">
+            <X
+              size={20}
+              className="absolute -top-2 -right-2 bg-green-600 text-white rounded-full p-0.5 cursor-pointer hover:bg-red-500"
+              onClick={() => setHamburgerOpen(false)}
+            />
+            <div className="flex flex-col items-center justify-center h-full py-6 gap-4 text-white">
+              <div className="cursor-pointer hover:underline">Edit Profile</div>
+              <div className="cursor-pointer hover:underline" onClick={()=>{
+                localStorage.removeItem("token");
+                navigate("/signin");
+              }}>Forget</div>
             </div>
-          )
-        }
+          </div>
+        </>
+      )}
+
       </div>
     </div>
   );
-};
+}; 

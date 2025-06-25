@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useRef , useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
+import { useEffect } from "react";
+import { BlogSkeleton } from "../components/BlogSkeleton";
+
+
 export const Publish = () => {
     const [title,setTitle] = useState<string>("");
     const [content,setContent] = useState<string>("");
@@ -13,8 +17,38 @@ export const Publish = () => {
     const [images,setimages] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
     console.log("images from publish");
     console.log(images)
-    const navigate = useNavigate();
+    const [local,setLocal] = useState<boolean>(false);
 
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(localStorage.getItem("token") === null){
+            setLocal(false);
+            setTimeout(()=>{
+                navigate("/signin")
+            },2000)
+        }else setLocal(true);
+    },[loading,navigate])
+
+    if ( !local) {
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
+            <BlogSkeleton/>
+            
+          </div>
+        );
+      }
+    if(loading){
+        return (
+            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
+
+                <div className="flex items-center justify-center h-screen">
+                    <div className="text-white text-2xl">Please wait image is processing</div>
+                </div>
+                
+            </div>
+        )
+    }
+    
     const handlePublish = async () => {
         try {
             console.log("Publishing blog with JSON payload");
@@ -40,18 +74,8 @@ export const Publish = () => {
         }
     };
 
-    if(loading){
-        return (
-            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
-
-                <div className="flex items-center justify-center h-screen">
-                    <div className="text-white text-2xl">Loading...</div>
-                </div>
-                
-            </div>
-        )
-    }
-    else return (
+    
+    return (
         <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
             <div className="overflow-hidden">
                 <AppBar userName="Pratham Raj" avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
