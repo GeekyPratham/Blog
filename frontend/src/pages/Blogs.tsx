@@ -18,9 +18,17 @@ export const Blogs = () => {
 
   if (!blogs || blogs.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-800">
-        <div className="text-white text-2xl">No Blogs Found</div>
-      </div>
+      <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-4 sm:p-6 md:p-10 overflow-x-hidden">
+      <AppBar
+        userName="Pratham Raj"
+        avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
+      />
+
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-300 mb-6 text-center">
+        No Blogs Available
+      </h1>
+
+    </div>
     );
   }
   console.log("inside Blogs Routes");

@@ -22,6 +22,7 @@ export const Publish = () => {
             title,
             content,
             tag,
+            
             images: images
             }, {
             headers: {

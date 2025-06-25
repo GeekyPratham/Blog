@@ -80,6 +80,7 @@ blogRouter.post('/',async (c) => {
   // console.log(prisma);
 
   try{
+    console.log("creating blog post");
     const blog = await prisma.post.create({
       data: {
         title : body.title,
@@ -87,7 +88,7 @@ blogRouter.post('/',async (c) => {
         tag : body.tag,
         images : body.images || [], // assuming images is an array of strings (URLs)
         published : true,
-        createdAt : new Date().toISOString(), // setting the current date as createdAt
+        // createdAt : new Date().toISOString(), // setting the current date as createdAt
         authorId : userId,
       }
     })
@@ -138,7 +139,7 @@ blogRouter.put('/', async(c) => {
         tag : body.tag,
         images : body.images || [],
         published : true,
-        createdAt : new Date().toISOString(), 
+        // createdAt : new Date().toISOString(), 
         authorId : c.get("userId"), // assuming the userId is set in the middleware
 
 
