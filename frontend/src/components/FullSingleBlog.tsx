@@ -94,7 +94,7 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
       </div>
 
       {/* Image Gallery */}
-      {images?.length > 0 && (
+      {Array.isArray(images) && images.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
           {images.map((img, index) => (
             <div
