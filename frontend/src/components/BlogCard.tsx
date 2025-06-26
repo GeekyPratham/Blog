@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 
 interface BlogCardProps {
   id: string;
-  author?: {
+  author: {
     name: string;
   };
   title: string;
   content: string;
   createdAt: string;
-  images: string[];
+  images?: string[];
   avatarUrl?: string;
   tag?: string;
 }

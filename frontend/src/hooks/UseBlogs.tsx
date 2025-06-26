@@ -4,7 +4,9 @@ import { BACKEND_URL } from '../../config';
 
 interface BlogCardProps {
   id : string,
-  author: string;
+  author: {
+    name: string;
+  };
   title: string;
   content: string;
   createdAt: string;
