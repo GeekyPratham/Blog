@@ -61,7 +61,7 @@ export const Blogs = () => {
           <div key={blog.id} className="w-full max-w-4xl px-2 sm:px-4">
             <BlogCard
               id={blog.id}
-              author={blog.author}
+              author={blog.author ?? { name: "Anonymous" }}
               title={blog.title}
               content={blog.content}
               createdAt={blog.createdAt}

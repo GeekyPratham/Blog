@@ -10,7 +10,7 @@ interface FullSingleBlogProps {
     title: string;
     content: string;
     createdAt: string;
-    images: string[];
+    images?: string[];
     avatarUrl?: string;
     tag?: string;
   };
