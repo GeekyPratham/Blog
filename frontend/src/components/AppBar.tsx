@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
 import { useState } from "react";
 import { X } from "lucide-react";
-import axios from "axios";
-import { BACKEND_URL } from "../../config";  
+ 
 interface AppBarProps {
   userName: string;
   avatarUrl: string;
