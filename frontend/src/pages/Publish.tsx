@@ -103,9 +103,7 @@ export const Publish = () => {
                         setTag={setTag}
                         selectedImages={selectedImages}
                         setSelectedImages={setSelectedImages}
-                        loading={loading}
                         setLoading={setLoading}
-                        images={images}
                         setimages={setimages}
                     />
                     
@@ -119,16 +117,16 @@ export const Publish = () => {
     )
 }
 
-function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,loading,setLoading,images,setimages}:{
+function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,setLoading,setimages}:{
     content:string;
     setContent: (value: string) => void;
     tag:string;
     setTag: (value: string) => void;
     selectedImages: File[];
     setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
-    loading:boolean;
+   
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    images: string[];
+
     setimages: React.Dispatch<React.SetStateAction<string[]>>;
 
 }) {
@@ -142,32 +140,35 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
             fileInputRef.current.click();
         }
     }
-    const handleFileChange = async(e) =>{
-        const file = e.target.files[0];
+    interface FileChangeEvent extends React.ChangeEvent<HTMLInputElement> {
+        target: HTMLInputElement & EventTarget & { files: FileList | null };
+    }
+
+    const handleFileChange = async (e: FileChangeEvent) => {
+        const file: File | undefined = e.target.files ? e.target.files[0] : undefined;
         console.log("File changed:", file);
-        if(!file){
-            console.log("No file is selected")
+        if (!file) {
+            console.log("No file is selected");
             return;
         }
-        if(file){
+        if (file) {
             console.log("File selected:", file.name);
-            // post the imgae to cloudinary or get the url of the image or file
+            // post the image to cloudinary or get the url of the image or file
             setLoading(true);
 
-            try{
+            try {
                 const formData = new FormData();
-                formData.append("file",file);
-                formData.append("upload_preset","BlogImages");
-                formData.append("cloud_name","db0hcdu39");
-                
-                const res = await axios.post("https://api.cloudinary.com/v1_1/db0hcdu39/image/upload",formData)
-                console.log("Image uploaded successfully:", res.data.url);
-                
-                setSelectedImages((prev) => [ file,...prev,]);
-                setimages((prev) => [ res.data.url,...prev,]);
+                formData.append("file", file);
+                formData.append("upload_preset", "BlogImages");
+                formData.append("cloud_name", "db0hcdu39");
 
-            }
-            catch(e){
+                const res = await axios.post<{ url: string }>("https://api.cloudinary.com/v1_1/db0hcdu39/image/upload", formData);
+                console.log("Image uploaded successfully:", res.data.url);
+
+                setSelectedImages((prev: File[]) => [file, ...prev]);
+                setimages((prev: string[]) => [res.data.url, ...prev]);
+
+            } catch (e) {
                 alert("Image upload failed");
                 console.error(e);
             }

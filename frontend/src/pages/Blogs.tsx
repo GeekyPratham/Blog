@@ -65,7 +65,13 @@ export const Blogs = () => {
               title={blog.title}
               content={blog.content}
               createdAt={blog.createdAt}
-              images={Array.isArray(blog.images) ? blog.images : [blog.images]}
+              images={
+                Array.isArray(blog.images)
+                  ? blog.images.filter((img): img is string => typeof img === "string")
+                  : typeof blog.images === "string"
+                  ? [blog.images]
+                  : []
+              }
               avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
               tag={blog.tag}
             />

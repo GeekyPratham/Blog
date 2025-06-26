@@ -1,6 +1,5 @@
-import React from "react";
+
 import Quote from "../components/Quote";
-import { useNavigate } from "react-router-dom";
 import { Auth } from "../components/Auth";
 
 export const Signup = () => {

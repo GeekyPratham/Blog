@@ -4,11 +4,11 @@ import { BACKEND_URL } from '../../config';
 
 interface BlogCardProps {
   id : string,
-  authorName: string;
+  author: string;
   title: string;
   content: string;
   createdAt: string;
-  images?: string;
+  images?: string[];
   avatarUrl?: string;
   tag?: string;
 }
