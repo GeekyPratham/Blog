@@ -4,8 +4,9 @@ import { BACKEND_URL } from '../../config';
 
 interface BlogCardProps {
   id : string,
-  author?: {
+  author: {
     name: string;
+    id: string;
   };
   title: string;
   content: string;
@@ -16,14 +17,13 @@ interface BlogCardProps {
 }
 
 
-// console.log(`${BACKEND_URL}/api/v1/blog/bulk`);
 
 export const useBlog = ( id:string ) =>{
 
     const [loading, setLoading] = useState<boolean>(true);
     const [blog,setBlog] = useState<BlogCardProps>();
-      
-    console.log("hello from useBlog hook");
+    console.log("hello buddy");
+    console.log("hello from useBlog hook with id");
     console.log("id")
     console.log(`${id}`)
     console.log(`${BACKEND_URL}/api/v1/blog/${id}`)

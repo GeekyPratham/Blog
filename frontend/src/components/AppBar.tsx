@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
 import { useState } from "react";
 import { X } from "lucide-react";
+import axios from "axios";
+import { BACKEND_URL } from "../../config";  
 interface AppBarProps {
   userName: string;
   avatarUrl: string;
@@ -13,7 +15,7 @@ export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
   const [isHamburgerOpen,setHamburgerOpen] = useState<boolean>(false);
 
   return (
-    <div className=" w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white py-4 px-6 shadow-md flex flex-wrap justify-between items-center l">
+    <div className=" w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white py-4 px-6 shadow-md flex flex-wrap justify-between items-center overflow-hidden">
       {/* Left: Username */}
       <Link to={"/blogs"}>
         <div className="text-lg font-semibold text-green-400">Welcome, {userName}</div>
@@ -55,6 +57,11 @@ export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
                 localStorage.removeItem("token");
                 navigate("/signin");
               }}>Forget</div>
+              <div className="cursor-pointer hover:underline" onClick={()=>{
+               
+                navigate("/mypost");
+              }}>My Post</div>
+
             </div>
           </div>
         </>

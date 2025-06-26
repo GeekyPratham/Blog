@@ -5,6 +5,7 @@ import { Signup } from './pages/Signup';
 import { Blog } from './pages/Blog';
 import { Blogs } from './pages/Blogs';
 import { Publish } from './pages/Publish';
+import { Mypost } from './pages/Mypost';
 
 const App = () => {
   return (
@@ -16,6 +17,8 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/publish" element={<Publish/>}/>
+        <Route path="/mypost" element={<Mypost />} />
+        {/* Add more routes as needed */}
       </Routes>
     </BrowserRouter>
     

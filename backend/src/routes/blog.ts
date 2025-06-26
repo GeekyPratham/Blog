@@ -96,6 +96,7 @@ blogRouter.post('/',async (c) => {
 
     return c.json({
       id: blog.id,
+      userId: userId,
 
     })
   }
@@ -186,6 +187,7 @@ blogRouter.get('/bulk', async(c) => {
         author:{
           select:{
             name: true,
+            id: true,
 
           }
         }

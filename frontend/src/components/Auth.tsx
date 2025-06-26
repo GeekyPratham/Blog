@@ -89,6 +89,7 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
               if (res.data.token) {
                 // Successfully signed up or signed in
                 localStorage.setItem("token",res.data.token);
+                localStorage.setItem("userId", res.data.userId);
                 navigate("/blogs");
               } else {
                 // Handle error from server
