@@ -15,6 +15,7 @@ export const Publish = () => {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);// for displaying the selected images 
     const [loading , setLoading] = useState<boolean>(false);
     const [images,setimages] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
+    const createdAt = new Date().toISOString(); // current date and time in ISO format
     console.log("images from publish");
     console.log(images)
     const [local,setLocal] = useState<boolean>(false);
@@ -56,7 +57,7 @@ export const Publish = () => {
             title,
             content,
             tag,
-            
+            createdAt,
             images: images
             }, {
             headers: {

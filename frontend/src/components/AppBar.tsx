@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
 import { useState } from "react";
 import { X } from "lucide-react";
-// import { Hamburger } from "./Hamburger"; 
-import { Ham } from "lucide-react";
 interface AppBarProps {
   userName: string;
   avatarUrl: string;

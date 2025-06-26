@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-// Make sure the config file exists at the correct path and exports BACKEND_URL
 import { BACKEND_URL } from '../../config';
 
 interface BlogCardProps {
@@ -8,8 +7,8 @@ interface BlogCardProps {
   authorName: string;
   title: string;
   content: string;
-  publishedDate: string;
-  imageUrl?: string;
+  createdAt: string;
+  images?: string;
   avatarUrl?: string;
   tag?: string;
 }
@@ -46,7 +45,7 @@ export const useBlog = ( id:string ) =>{
 
       useEffect(() => {
         if (blog) {
-            console.log("✅ Blog state updated:", blog);
+            console.log(" Blog state updated:", blog);
         }
     }, [blog]);
 
