@@ -25,7 +25,7 @@ export const BlogCard = ({
   tag = "General",
 }: BlogCardProps) => {
   // Prevent click propagation for action buttons
-  const handleButtonClick = (e) => {
+  const handleButtonClick = () => {
     
   };
 
