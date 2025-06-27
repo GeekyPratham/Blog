@@ -32,16 +32,16 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
   } = blog;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 text-gray-100">
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-8 text-gray-100">
       <div className="flex flex-col lg:flex-row justify-between gap-8 border-b border-gray-700 pb-8 mb-8 bg-gray-900 rounded-2xl shadow-lg shadow-violet-500/10 p-6 lg:p-8">
         {/* Blog Content */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 lg:min-w-[500px]">
           <h1 className="min-h[60] text-4xl lg:text-5xl font-bold text-blue-300 mb-4 break-words">
             {title}
           </h1>
           <p className="text-sm text-gray-400 mb-6">Posted on {createdAt.slice(0,10)}</p>
 
-          <p className="text-lg lg:text-xl text-gray-200 leading-relaxed whitespace-pre-line">
+          <p className="text-lg lg:text-xl text-gray-200 leading-relaxed whitespace-pre-line break-words">
             {content}
           </p>
 

@@ -83,6 +83,7 @@ blogRouter.post('/',async (c) => {
     console.log("creating blog post");
     const blog = await prisma.post.create({
       data: {
+    
         title : body.title,
         content : body.content,
         tag : body.tag,
@@ -160,6 +161,34 @@ blogRouter.put('/', async(c) => {
     })
   }
   
+})
+// delete blog post
+blogRouter.delete('/delete/:blogid',async(c)=>{
+  const body = c.req.param('blogid');
+  console.log("body", body);
+
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+  console.log("after connecting to db");
+  // console.log(prisma);
+
+  try{
+    const blog = await prisma.post.delete({
+      where: {
+        id : body
+      }
+    })
+    return c.json({
+      msg: "blog post deleted successfully"
+    })
+  }catch(e){
+    c.status(411);
+    return c.json({
+      msg: "error while deleting blog post"
+    })
+  }
 })
 
 // pagination ->in landing page only shows 10 blogs only after scroll or clicking on button then show next 10 
