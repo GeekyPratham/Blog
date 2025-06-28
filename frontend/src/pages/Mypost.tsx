@@ -5,10 +5,26 @@ import { BlogSkeleton } from "../components/BlogSkeleton";
 import { useEffect, useState } from "react";
 import { useBlogs } from "../hooks/UseBlogs";
 
+interface BlogCardProps {
+  id: string;
+  author: {
+    name: string;
+  };
+  title: string;
+  content: string;
+  createdAt: string;
+  images?: string[];
+  avatarUrl?: string;
+  tag?: string;
+  type: "Blogs" | "Myposts";
+  onDelete?: (id: string) => void;
+
+}
+
 export const Mypost = () => {
   const { loading, blogs } = useBlogs();
   const navigate = useNavigate();
-  const [myBlogs, setMyBlogs] = useState([]);
+  const [myBlogs, setMyBlogs] = useState<BlogCardProps[]>([]);
 
   useEffect(() => {
     if (localStorage.getItem("token") === null) {
@@ -21,7 +37,12 @@ export const Mypost = () => {
   useEffect(() => {
     // Filter only user’s own posts
     const userId = localStorage.getItem("userId");
-    const filtered = blogs?.filter((b) => b.author.id === userId);
+    const filtered = blogs
+      ?.filter((b) => b.author.id === userId)
+      .map((b) => ({
+        ...b,
+        type: "Myposts" as const,
+      }));
     setMyBlogs(filtered || []);
   }, [blogs]);
 
