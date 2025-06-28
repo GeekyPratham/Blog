@@ -4,7 +4,7 @@ import {   useState } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
-
+import { useNavigate } from "react-router-dom";
 
 interface BlogCardProps {
   id: string;
@@ -38,8 +38,9 @@ export const BlogCard = ({
   const [options,setOptions] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  
-  
+  const navigate = useNavigate();
+
+
   if(loading){
    
     return (
@@ -150,10 +151,7 @@ export const BlogCard = ({
           {options && (
             <>
               {/*  Background Blur Overlay */}
-              {/* <div
-                className="fixed inset-0 backdrop-blur-sm z-40"
-                onClick={() => setOptions(false)}
-              ></div> */}
+             
 
               {/* Hamburger Menu Box with Animation */}
               <div className=" top-24 right-6 sm:right-20 w-48 sm:w-52  bg-green-700 rounded-lg shadow-lg z-50 transform scale-95 sm:scale-100 transition-all duration-300 ease-out">
@@ -163,26 +161,45 @@ export const BlogCard = ({
                   onClick={() => setOptions(false)}
                 />
                 <div className="flex flex-col items-center justify-center h-13 p-5 gap-2 text-white">
-                  <div className="cursor-pointer hover:underline" onClick={()=>{
+                  <div className="cursor-pointer hover:underline" onClick={async()=>{
+                      setLoading(true);
+                      try {
+                        const res = await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+                          headers: { 
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                          },
+                        });
+                        console.log("response from backend", res.data);
+                        navigate('/publish',{
+                          state:{
+                            blog:res.data.blog,
+                          }
+                        });
+                        
+                        setOptions(false);
 
+                      } catch (error) {
+                        console.error("Error deleting blog:", error);
+                        setLoading(false);
+                      }
                   }}>Edit Blog</div>
-                 <div className="cursor-pointer hover:underline" onClick={async () => {
-                   setLoading(true);  
-                   try {
-                     await axios.delete(`${BACKEND_URL}/api/v1/blog/delete/${id}`, {
-                       headers: { 
-                         Authorization: `Bearer ${localStorage.getItem("token")}`,
-                       },
-                     });
-                     setLoading(false);
-                     setOptions(false);
-                     onDelete?.(id);  // notify parent to delete this post which has this id
-                   } catch (error) {
-                     console.error("Error deleting blog:", error);
-                     setLoading(false);
-                   }
-                 }}
-                >Delete</div>
+                  <div className="cursor-pointer hover:underline" onClick={async () => {
+                    setLoading(true);  
+                    try {
+                      await axios.delete(`${BACKEND_URL}/api/v1/blog/delete/${id}`, {
+                        headers: { 
+                          Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                      });
+                      setLoading(false);
+                      setOptions(false);
+                      onDelete?.(id);  // notify parent to delete this post which has this id
+                    } catch (error) {
+                      console.error("Error deleting blog:", error);
+                      setLoading(false);
+                    }
+                  }}
+                  >Delete</div>
 
                 </div>
               </div>

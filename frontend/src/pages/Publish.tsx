@@ -1,6 +1,6 @@
 import { AppBar } from "../components/AppBar"
 import {  X,Paperclip } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useRef , useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
@@ -21,6 +21,10 @@ export const Publish = () => {
     const [local,setLocal] = useState<boolean>(false);
 
     const navigate = useNavigate();
+
+    const location = useLocation();
+    const blog = location.state?.blog;
+
     useEffect(()=>{
         if(localStorage.getItem("token") === null){
             setLocal(false);
@@ -29,6 +33,23 @@ export const Publish = () => {
             },2000)
         }else setLocal(true);
     },[loading,navigate])
+
+    useEffect(()=>{
+        if(blog){
+            setTitle(blog.title);
+            setContent(blog.content);
+            setTag(blog.tag);
+            setimages(blog.images || []);
+
+            // Converting base64 images to File objects
+            // Assuming blog.images is an array of base64 strings
+
+            setSelectedImages(blog.images?.map((img: string) => {
+                const blob = new Blob([img], { type: 'image/jpeg' });
+                return new File([blob], 'image.jpg', { type: 'image/jpeg' });
+            }) || []);
+        }
+    },[blog])
 
     if ( !local) {
         return (
@@ -51,28 +72,59 @@ export const Publish = () => {
     }
     
     const handlePublish = async () => {
-        try {
-            console.log("Publishing blog with JSON payload");
-            const response = await axios.post(`${BACKEND_URL}/api/v1/blog`, {
-            title,
-            content,
-            tag,
-            createdAt,
-            images: images
-            }, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-            });
+        if(blog){
+            console.log("Updating existing blog");
+            
+            try {
+              
+                const response = await axios.put(`${BACKEND_URL}/api/v1/blog`, {
+                    id: blog.id, // Assuming blog has an id field
+                    title,
+                    content,
+                    tag,
+                    createdAt,
+                    images: images
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                });
 
-            console.log("Blog published successfully:", response.data);
-           
-            setLoading(false);
-            navigate("/blogs");
-        } catch (error) {
-            console.error("Error publishing blog:", error);
+                console.log("Blog updated successfully:", response.data);
+                
+                navigate("/blogs");
+            } catch (error) {
+                console.error("Error updating blog:", error);
+            }
+            return;
         }
+        else{
+            try {
+              
+                console.log("Publishing blog with JSON payload");
+                const response = await axios.post(`${BACKEND_URL}/api/v1/blog`, {
+                title,
+                content,
+                tag,
+                createdAt,
+                images: images
+                }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+                });
+
+                console.log("Blog published successfully:", response.data);
+            
+                
+                navigate("/blogs");
+            } catch (error) {
+                console.error("Error publishing blog:", error);
+            }
+        }
+       
     };
 
     
