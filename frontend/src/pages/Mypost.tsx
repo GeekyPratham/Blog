@@ -64,10 +64,7 @@ export const Mypost = () => {
   if (myBlogs.length === 0) {
     return (
       <div className="min-h-screen text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-6">
-        <AppBar
-          userName="Pratham Raj"
-          avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-        />
+        <AppBar/>
         <h1 className="text-3xl font-bold text-center text-blue-300 mt-10">
           No Blogs Posted Yet!
         </h1>
@@ -77,10 +74,7 @@ export const Mypost = () => {
 
   return (
     <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-6">
-      <AppBar
-        userName="Pratham Raj"
-        avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
-      />
+      <AppBar/>
       <h1 className="text-4xl font-bold text-blue-300 text-center">My Blogs</h1>
       <div className="flex flex-col gap-8 items-center w-full">
         {myBlogs.map((blog) => (

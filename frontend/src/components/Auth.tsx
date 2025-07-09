@@ -6,12 +6,14 @@ import type { SignupInput , SigninInput} from "@geekypratham/blog-common";
 import { signupInputs, signinInputs } from "@geekypratham/blog-common";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
+import { ClipLoader } from "react-spinners";
+
 
 export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
 
     const navigate = useNavigate();
     const [error, setError] = useState("");
-
+    const [loading,setLoading] = useState<boolean>(false);
     const [postInputs, setPostInputs] = useState<SignupInput | SigninInput>(() => {
       if (type === "Signup") {
         return {
@@ -26,6 +28,14 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
         }
       }
     });
+
+    if(loading){
+      return (
+        <div >
+           <ClipLoader color="#36d7b7" loading={loading} size={50} />
+        </div>
+      )
+    }
 
     return (
         <div className="w-full max-w-md">
@@ -64,13 +74,14 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
           )}
           <button className="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" onClick={ async ()=>{
             // Handle form submission here
-
+            setLoading(true);
             const schema = type === "Signup" ? signupInputs : signinInputs;
             const result = schema.safeParse(postInputs);// Validate the data using Zod does not need to send request to backend for validation
 
             if (!result.success) { 
               setError(result.error.issues[0].message);
               // alert("incorrect user details");
+              setLoading(false);
               return;
             }
 
@@ -84,23 +95,26 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
             
               result.data
             ).then((res) => { 
+              
               console.log("Response from server:", res.data);
               console.log("getting data");
               if (res.data.token) {
                 // Successfully signed up or signed in
                 localStorage.setItem("token",res.data.token);
                 localStorage.setItem("userId", res.data.userId);
+                localStorage.setItem("name",res.data.name);
                 navigate("/blogs");
               } else {
                 // Handle error from server
                 setError(res.data.message || "An error occurred");
               }
             }).catch((err) => {
+           
               console.error("Error during request:", err);
               console.log(err.response.data)
               setError(err.response.data || "An error occurred");
             });
-
+            setLoading(false);
            
           }}> 
             {type==="Signup"? "Sign Up" : "Sign In"}

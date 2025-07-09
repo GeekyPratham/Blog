@@ -3,13 +3,9 @@ import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
 import { useState } from "react";
 import { X } from "lucide-react";
- 
-interface AppBarProps {
-  userName: string;
-  avatarUrl: string;
-}
 
-export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
+
+export const AppBar = () => {
   const navigate = useNavigate();
   const [isHamburgerOpen,setHamburgerOpen] = useState<boolean>(false);
 
@@ -17,7 +13,7 @@ export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
     <div className=" w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white py-4 px-6 shadow-md flex flex-wrap justify-between items-center overflow-hidden">
       {/* Left: Username */}
       <Link to={"/blogs"}>
-        <div className="text-lg font-semibold text-green-400">Welcome, {userName}</div>
+        <div className="text-lg font-semibold text-green-400">Welcome, {localStorage.getItem("name") || "Anonymous"}</div>
       </Link>
 
       {/* Right: Actions */}
@@ -28,7 +24,7 @@ export const AppBar = ({ userName, avatarUrl }: AppBarProps) => {
           Published
         </button>
         <img
-          src={avatarUrl}
+          src={"https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"}
           alt="User Avatar"
           className="w-9 h-9 rounded-full border-2 border-violet-500 shadow-md cursor-pointer"
           onClick={()=>{

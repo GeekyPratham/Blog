@@ -13,12 +13,14 @@ export const Publish = () => {
     const [content,setContent] = useState<string>("");
     const [tag , setTag] = useState<string>("");
     const [selectedImages, setSelectedImages] = useState<File[]>([]);// for displaying the selected images 
-    const [loading , setLoading] = useState<boolean>(false);
-    const [images,setimages] = useState<string[]>([]); // for storing the image url after uploading to cloudinary and sending to the server
+    const [imageLoading , setimageLoading] = useState<boolean>(false);
+    const [images,setimages] = useState<string[]>([]); // for storing the image url after upimageLoading to cloudinary and sending to the server
     const createdAt = new Date().toISOString(); // current date and time in ISO format
     console.log("images from publish");
     console.log(images)
     const [local,setLocal] = useState<boolean>(false);
+
+    const [submitLoading,setSubmitLoading] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ export const Publish = () => {
                 navigate("/signin")
             },2000)
         }else setLocal(true);
-    },[loading,navigate])
+    },[imageLoading,navigate])
 
     useEffect(()=>{
         if(blog){
@@ -59,7 +61,7 @@ export const Publish = () => {
           </div>
         );
       }
-    if(loading){
+    if(imageLoading){
         return (
             <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
 
@@ -70,13 +72,24 @@ export const Publish = () => {
             </div>
         )
     }
-    
+    if(submitLoading){
+        return (
+            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
+
+                <div className="flex items-center justify-center h-screen">
+                    <div className="text-white text-2xl">Please wait!</div>
+                </div>
+                
+            </div>
+        )
+    }
     const handlePublish = async () => {
+
         if(blog){
             console.log("Updating existing blog");
             
             try {
-              
+                setSubmitLoading(true)
                 const response = await axios.put(`${BACKEND_URL}/api/v1/blog`, {
                     id: blog.id, // Assuming blog has an id field
                     title,
@@ -92,7 +105,7 @@ export const Publish = () => {
                 });
 
                 console.log("Blog updated successfully:", response.data);
-                
+                setSubmitLoading(false)
                 navigate("/blogs");
             } catch (error) {
                 console.error("Error updating blog:", error);
@@ -101,7 +114,7 @@ export const Publish = () => {
         }
         else{
             try {
-              
+                setSubmitLoading(true)
                 console.log("Publishing blog with JSON payload");
                 const response = await axios.post(`${BACKEND_URL}/api/v1/blog`, {
                 title,
@@ -118,7 +131,7 @@ export const Publish = () => {
 
                 console.log("Blog published successfully:", response.data);
             
-                
+                setSubmitLoading(false)
                 navigate("/blogs");
             } catch (error) {
                 console.error("Error publishing blog:", error);
@@ -131,7 +144,7 @@ export const Publish = () => {
     return (
         <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-6 md:p-10 overflow-x-hidden">
             <div className="overflow-hidden">
-                <AppBar userName="Pratham Raj" avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"/>
+                <AppBar/>
             </div>
 
             <div  className="h-full  flex flex-col gap-5 items-center">
@@ -155,7 +168,7 @@ export const Publish = () => {
                         setTag={setTag}
                         selectedImages={selectedImages}
                         setSelectedImages={setSelectedImages}
-                        setLoading={setLoading}
+                        setimageLoading={setimageLoading}
                         setimages={setimages}
                     />
                     
@@ -169,7 +182,7 @@ export const Publish = () => {
     )
 }
 
-function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,setLoading,setimages}:{
+function Textarea({content, setContent, tag, setTag, selectedImages, setSelectedImages,setimageLoading,setimages}:{
     content:string;
     setContent: (value: string) => void;
     tag:string;
@@ -177,7 +190,7 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
     selectedImages: File[];
     setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
    
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setimageLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
     setimages: React.Dispatch<React.SetStateAction<string[]>>;
 
@@ -206,7 +219,7 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
         if (file) {
             console.log("File selected:", file.name);
             // post the image to cloudinary or get the url of the image or file
-            setLoading(true);
+            setimageLoading(true);
 
             try {
                 const formData = new FormData();
@@ -224,7 +237,7 @@ function Textarea({content, setContent, tag, setTag, selectedImages, setSelected
                 alert("Image upload failed");
                 console.error(e);
             }
-            setLoading(false);
+            setimageLoading(false);
         }
     }
        

@@ -1,54 +1,146 @@
-# React + TypeScript + Vite
+# 🚀 Blog Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **frontend** for the Blog platform, built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**. It provides a modern, responsive UI for user authentication, blog publishing, and browsing, and is designed to work seamlessly with the [Blog Backend](../backend/README.md).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- 🔐 User Signup & Signin (JWT-based)
+- 📝 Create, Edit, Delete, and View Blog Posts
+- 🖼 Image upload (Cloudinary integration)
+- 👤 My Posts section (view your own blogs)
+- 📱 Responsive design with Tailwind CSS
+- ⚡ Fast development with Vite
+- 🧩 Modular, component-based architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 📁 Project Structure
+
+```
+frontend/
+├── public/                  # Static assets
+├── src/
+│   ├── assets/              # Images and SVGs
+│   ├── components/          # Reusable UI components (AppBar, BlogCard, etc.)
+│   ├── hooks/               # Custom React hooks (useBlogs, etc.)
+│   ├── pages/               # Page components (Blogs, Blog, Publish, etc.)
+│   ├── App.tsx              # Main app with routes
+│   ├── main.tsx             # React entry point
+│   ├── index.css            # Tailwind CSS import
+│   └── vite-env.d.ts
+├── .env                     # Environment variables
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+
+## 🛠️ Setup & Development
+
+1. Install dependencies
+
+This means you should run the following command in your terminal (inside the frontend folder):
+
+  npm install
+
+2. Start the development server
+
+  npm run dev
+
+  The app will be available at http://localhost:5173 (or as shown in your terminal).
+
+3. Build for production
+
+  npm run build
+
+4. Preview production build
+  npm run preview
+
+
+---
+## 🧩 Main Pages & Components
+
+Signin/Signup: User authentication forms (/signin, /signup)
+Blogs: List all blogs (/blogs)
+Blog: View a single blog post (/blog/:id)
+Publish: Create or edit a blog post (/publish)
+Mypost: View your own posts (/mypost)
+AppBar: Top navigation bar with user menu
+BlogCard: Blog preview card
+FullSingleBlog: Detailed blog view with images and author info
+
+---
+
+## 🔗 Routing
+
+Routing is handled with react-router-dom:
+
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Signin />} />
+    <Route path="/signin" element={<Signin />} />
+    <Route path="/signup" element={<Signup />} />
+    <Route path="/blogs" element={<Blogs />} />
+    <Route path="/blog/*" element={<Blog />} />
+    <Route path="/publish" element={<Publish />} />
+    <Route path="/mypost" element={<Mypost />} />
+  </Routes>
+</BrowserRouter>
+
+---
+## 🖼 Image Upload
+
+Images are uploaded to Cloudinary via the Publish page.
+Uploaded image URLs are stored in the backend and displayed in blog posts.
+
+--- 
+
+## 🧪 Development Notes
+
+State Management: Uses React hooks (useState, useEffect) and custom hooks (useBlogs, useBlog).
+Styling: Tailwind CSS for rapid, utility-first styling.
+API Calls: Uses axios for HTTP requests.
+Validation: Uses zod schemas from the shared @geekypratham/blog-common package.
+Authentication: JWT token is stored in localStorage and sent with API requests.
+
+---
+
+## 🛠️ Tech Stack
+
+Framework: React 18 + Vite
+Language: TypeScript
+Styling: Tailwind CSS
+Routing: react-router-dom
+HTTP: axios
+Validation: zod (from shared package)
+Icons: lucide-react
+
+---
+
+## 🚀 Deployment
+
+The frontend can be deployed to any static hosting Vercel.
+For Vercel, see vercel.json for SPA routing support.
+
+---
+
+## 📚 References
+
+React Documentation
+Vite Documentation
+Tailwind CSS
+Cloudinary
+React Router
+Axios
+
+---
+## 🙏 Credits
+
+UI/UX inspired by modern blog platforms.
+Built by Pratham Raj.

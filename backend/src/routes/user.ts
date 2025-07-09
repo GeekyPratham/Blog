@@ -84,7 +84,9 @@ userRouter.post('/signup',async (c) => {
   return c.json({
     token,
     userId:user.id,
+    name:user.name,
     msg: "User created successfully",
+    
   })
 })
 
@@ -151,6 +153,7 @@ userRouter.post('/signin',async (c) => {
   return c.json({
     token,
     userId: alreadyExists.id,
+    name:alreadyExists.name,
     msg: "User signin successfully",
   })
 })
