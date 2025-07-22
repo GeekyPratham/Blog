@@ -47,7 +47,9 @@ export const AppBar = () => {
                 onClick={() => setHamburgerOpen(false)}
               />
               <div className="flex flex-col items-center justify-center h-full py-6 gap-4 text-white">
-                <div className="cursor-pointer hover:underline">Edit Profile</div>
+                <div className="cursor-pointer hover:underline" onClick={()=>{
+                  navigate("/editprofile")
+                }}>Edit Profile</div>
                 <div className="cursor-pointer hover:underline" onClick={()=>{
                   localStorage.removeItem("token");
                   navigate("/signin");

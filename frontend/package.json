@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@geekypratham/blog-common": "^1.0.5",
+    "@geekypratham/blog-common": "file:../common",
     "@tailwindcss/vite": "^4.1.8",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
@@ -21,7 +21,8 @@
     "react-quill": "^2.0.0",
     "react-router-dom": "^7.6.2",
     "react-spinners": "^0.17.0",
-    "tailwindcss": "^4.1.8"
+    "tailwindcss": "^4.1.8",
+    "update": "^0.7.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

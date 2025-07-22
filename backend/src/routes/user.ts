@@ -2,8 +2,8 @@ import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign,verify,decode } from 'hono/jwt';
-import { signupInputs, signinInputs } from '@geekypratham/blog-common';
-
+import { signupInputs, signinInputs, updateUserDetails } from '@geekypratham/blog-common';
+import { authMiddleware } from '../middlewares/auth';
 
 export const userRouter =  new Hono<{
   Bindings:{
@@ -11,6 +11,7 @@ export const userRouter =  new Hono<{
     JWT_SECRET: string,
   }
 }>();
+userRouter.use('/updateProfile/*', authMiddleware);
 
 
 
@@ -156,4 +157,80 @@ userRouter.post('/signin',async (c) => {
     name:alreadyExists.name,
     msg: "User signin successfully",
   })
+})
+
+
+userRouter.get('/:id',async(c)=>{
+  
+  const userId = c.req.param('id');
+
+  console.log(userId);
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+  console.log("after connecting to db");
+
+
+
+  try {
+    const updatedUser = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select:{
+        name: true,
+        password : true,
+        profileImg : true
+      }
+    });
+
+    return c.json({
+      message: 'Getting user successfully',
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error(err);
+    return c.json({ message: 'Error in getting user' }, 500);
+  }
+})
+
+userRouter.patch('/updateProfile/:id',async(c)=>{
+  const userDetails = await c.req.json();
+  const userId = c.req.param('id');
+  console.log(userDetails);
+  console.log(userId);
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+      
+  }).$extends(withAccelerate());
+  console.log("after connecting to db");
+
+  console.log(userDetails);
+
+  const {success} = updateUserDetails.safeParse(userDetails);
+ 
+  if(!success){
+    c.status(411);
+    return c.json({
+      message : "invalid user details"
+    })
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: userDetails,
+    });
+
+    return c.json({
+      message: 'User updated successfully',
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error(err);
+    return c.json({ message: 'User update failed' }, 500);
+  }
 })

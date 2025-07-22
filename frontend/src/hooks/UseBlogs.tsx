@@ -45,7 +45,7 @@ export const useBlog = ( id:string ) =>{
         });
     }, [id]);
 
-      useEffect(() => {
+    useEffect(() => {
         if (blog) {
             console.log(" Blog state updated:", blog);
         }

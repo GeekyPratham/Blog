@@ -6,6 +6,7 @@ import { Blog } from './pages/Blog';
 import { Blogs } from './pages/Blogs';
 import { Publish } from './pages/Publish';
 import { Mypost } from './pages/Mypost';
+import { Editprofile } from './pages/Editprofile';
 
 const App = () => {
   return (
@@ -18,7 +19,8 @@ const App = () => {
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/publish" element={<Publish/>}/>
         <Route path="/mypost" element={<Mypost />} />
-        {/* Add more routes as needed */}
+        <Route path="/editprofile" element={<Editprofile/>} />
+     
       </Routes>
     </BrowserRouter>
     

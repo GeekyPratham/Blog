@@ -30,9 +30,9 @@ model User{
   email String @unique
   name String
   password String
+  profileImg String?
   posts Post[]
- 
-
+  
 }
 
 model Post{
