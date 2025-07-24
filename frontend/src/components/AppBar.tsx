@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 export const AppBar = () => {
   const navigate = useNavigate();
   const [isHamburgerOpen,setHamburgerOpen] = useState<boolean>(false);
-
+ 
   return (
     <div className=" w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white py-4 px-6 shadow-md flex flex-wrap justify-between items-center overflow-hidden">
       {/* Left: Username */}
@@ -24,7 +24,7 @@ export const AppBar = () => {
           Published
         </button>
         <img
-          src={"https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"}
+          src={localStorage.getItem("profileImg")||"https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"}
           alt="User Avatar"
           className="w-9 h-9 rounded-full border-2 border-violet-500 shadow-md cursor-pointer"
           onClick={()=>{

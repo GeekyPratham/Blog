@@ -187,6 +187,9 @@ function TextArea ({name,setName,password,setPassword,profileImg,setProfileImg}:
                             }
                         });
                         console.log("Profile updated successfully:", res.data);
+                        localStorage.setItem("name", name);
+                        localStorage.setItem("profileImg", profileImg);
+                        
                         alert("Profile updated successfully");
                        
 
