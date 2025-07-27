@@ -88,6 +88,9 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10 py-8 text-gray-100">
       <div className="flex flex-col lg:flex-row justify-between gap-8 border-b border-gray-700 pb-8 mb-8 bg-gray-900 rounded-2xl shadow-lg shadow-violet-500/10 p-6 lg:p-8">
+        {error && (
+          <div className="text-red-400 text-sm mb-2">{error}</div>
+        )}
         {/* Blog Content */}
         <div className="flex-1 min-w-0 lg:min-w-[500px]">
           <h1 className="min-h[60] text-4xl lg:text-5xl font-bold text-blue-300 mb-4 break-words">
