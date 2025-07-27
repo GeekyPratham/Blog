@@ -1,32 +1,86 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { ThumbsUp, MessageCircle, Share2, X } from "lucide-react";
+import axios from "axios";
+import { BACKEND_URL } from "../../config";
 
 interface FullSingleBlogProps {
   blog: {
     id: string;
     author?: {
       name: string;
+      profileImg?: string;
     };
     title: string;
     content: string;
     createdAt: string;
     images?: string[];
-    avatarUrl?: string;
+
     tag?: string;
   };
 }
 
 export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [likeLoading, setLikeLoading] = useState<boolean>(false);
+  const [like, setLike] = useState<number>(0);
+  const [likedbyUser, setLikedByUser] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch initial likes
+  useEffect(() => {
+    if (!blog) return;
+    const fetchLikes = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/api/v1/like/${blog.id}`);
+        setLike(res.data.totalLikes);
+        setLikedByUser(res.data.likedbyUser);
+      } catch (error) {
+        console.error("Error fetching likes:", error);
+        setError("Failed to load likes");
+      }
+    };
+    fetchLikes();
+  }, [blog]);
 
   if (!blog) return <div className="text-white">No blog data available.</div>;
+  // Handle like/unlike
+  const handleLikeClick = async () => {
+    if (likeLoading) return;
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    if (!userId || !token) {
+      setError("Please log in to like posts");
+      return;
+    }
 
+    setLikeLoading(true);
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/api/v1/like/updateLike/${blog.id}/${userId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setLike(res.data.totalLikes);
+      setLikedByUser(res.data.likedbyUser);
+      setError(null);
+    } catch (error: unknown) {
+      console.error("Error updating like:", error);
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.error || "Failed to update like");
+      } else {
+        setError("Failed to update like");
+      }
+    } finally {
+      setLikeLoading(false);
+    }
+  };
   const {
     author,
     title,
     content,
     createdAt,
-    avatarUrl = "https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg",
     images,
     tag = "General",
   } = blog;
@@ -51,15 +105,30 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
               {tag}
             </span>
             <span className="text-gray-400">
-              {Math.ceil(content.length / 100)} min read
+              {Math.ceil(content.length / 300)} min read
             </span>
           </div>
 
           {/* Action Buttons */}
           <div className="mt-6 flex flex-wrap gap-4 text-base">
-            <button className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition">
-              <ThumbsUp className="w-5 h-5" />
-              Like
+            <button
+              onClick={handleLikeClick}
+              disabled={likeLoading}
+              className={`flex items-center gap-1 ${
+                likeLoading
+                  ? "text-gray-500"
+                  : likedbyUser
+                  ? "text-blue-400 hover:text-blue-300"
+                  : "text-blue-300 hover:text-blue-300"
+              } transition-colors`}
+              aria-label="Like this post"
+            >
+              <ThumbsUp
+                className="w-4 h-4"
+                strokeWidth={likedbyUser ? 1.5 : 2}
+                fill={likedbyUser ? "#60a5fa" : "none"} // blue-400 fill if liked
+              />
+              {like}
             </button>
             <button className="flex items-center gap-2 text-violet-400 hover:text-violet-300 transition">
               <MessageCircle className="w-5 h-5" />
@@ -76,13 +145,11 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
         <div className="min-w-full lg:min-w-[260px] border-t lg:border-t-0 lg:border-l border-gray-700 pt-6 lg:pt-0 lg:pl-8">
           <p className="text-sm text-gray-400 mb-2">Author</p>
           <div className="flex items-center gap-4">
-            {avatarUrl && (
-              <img
-                src={avatarUrl}
+            <img
+                src={author?.profileImg}
                 alt="Author"
                 className="w-12 h-12 rounded-full border border-violet-500"
-              />
-            )}
+            />
             <div>
               <h3 className="text-xl font-semibold text-white">{author?.name}</h3>
               <p className="text-gray-400 text-sm">

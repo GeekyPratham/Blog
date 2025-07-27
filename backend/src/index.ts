@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { userRouter } from './routes/user';
 import { blogRouter } from './routes/blog';
+import { likeRouter } from './routes/like';
 import { cors } from 'hono/cors';
 
 
@@ -32,6 +33,6 @@ app.use('/*', cors());
 
 app.route("/api/v1/user",userRouter);
 app.route("/api/v1/blog",blogRouter);
-
+app.route("/api/v1/like",likeRouter);
 
 export default app

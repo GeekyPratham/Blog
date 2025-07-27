@@ -32,6 +32,7 @@ model User{
   password String
   profileImg String?
   posts Post[]
+  Likes Like[]
   
 }
 
@@ -46,5 +47,15 @@ model Post{
   published Boolean @default(false)
   authorId String
   author User @relation(fields: [authorId], references: [id])
+  Likes Like[]
 
+}
+
+model Like{
+  id String @id @default(uuid())
+  postId String
+  userId String
+  post Post @relation(fields:[postId],references:[id], onDelete: Cascade)
+  user User @relation(fields:[userId],references:[id], onDelete: Cascade)
+  @@unique([postId, userId])
 }

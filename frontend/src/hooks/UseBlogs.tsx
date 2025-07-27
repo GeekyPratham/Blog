@@ -7,12 +7,12 @@ interface BlogCardProps {
   author: {
     name: string;
     id: string;
+    profileImg?: string; 
   };
   title: string;
   content: string;
   createdAt: string;
   images?: string[];
-  avatarUrl?: string;
   tag?: string;
 }
 
@@ -72,12 +72,11 @@ export const useBlogs = () =>{
                 'Authorization': `Bearer ${localStorage.getItem("token")}` // Uncomment if you need to send a token
             }
         })
-            .then(res => {
-
-                console.log("Blogs fetched successfully:", res.data.posts);
-                setBlogs(res.data.posts);
-                setLoading(false);
-            }) 
+        .then(res => {
+            console.log("Blogs fetched successfully:", res.data.posts);
+            setBlogs(res.data.posts);
+            setLoading(false);
+        }) 
             
     },[])
     

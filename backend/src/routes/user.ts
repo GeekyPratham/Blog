@@ -68,6 +68,7 @@ userRouter.post('/signup',async (c) => {
       email: userDetails.email,
       password: userDetails.password,
       name: userDetails.name,
+      
     }
   })
   
@@ -86,6 +87,7 @@ userRouter.post('/signup',async (c) => {
     token,
     userId:user.id,
     name:user.name,
+    profileImg: userDetails.profileImg,
     msg: "User created successfully",
     
   })
@@ -155,6 +157,7 @@ userRouter.post('/signin',async (c) => {
     token,
     userId: alreadyExists.id,
     name:alreadyExists.name,
+    profileImg: userDetails.profileImg,
     msg: "User signin successfully",
   })
 })

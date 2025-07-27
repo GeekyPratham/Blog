@@ -217,7 +217,7 @@ blogRouter.get('/bulk', async(c) => {
           select:{
             name: true,
             id: true,
-
+            profileImg: true,
           }
         }
       }
@@ -257,6 +257,7 @@ blogRouter.get('/:id',async (c) => {
           select:{
             name:true,
             id:true,
+            profileImg: true,
           }
         }
       }

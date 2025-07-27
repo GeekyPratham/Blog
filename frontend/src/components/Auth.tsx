@@ -103,6 +103,7 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
                 localStorage.setItem("token",res.data.token);
                 localStorage.setItem("userId", res.data.userId);
                 localStorage.setItem("name",res.data.name);
+                localStorage.setItem("profileImg", res.data.profileImg || "");
                 navigate("/blogs");
               } else {
                 // Handle error from server

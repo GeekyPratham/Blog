@@ -67,7 +67,6 @@ export const Blogs = () => {
                   ? [blog.images]
                   : []
               }
-              avatarUrl="https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"
               tag={blog.tag}
               type="Blogs"
             />
