@@ -3,6 +3,7 @@ import { ThumbsUp, MessageCircle, Share2, X } from "lucide-react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
 
+
 interface FullSingleBlogProps {
   blog: {
     id: string;
@@ -18,20 +19,22 @@ interface FullSingleBlogProps {
     tag?: string;
   };
 }
-
 export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [likeLoading, setLikeLoading] = useState<boolean>(false);
-  const [like, setLike] = useState<number>(0);
-  const [likedbyUser, setLikedByUser] = useState<boolean>(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [like, setLike] = useState(0);
+  const [likedbyUser, setLikedByUser] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch initial likes
+
   useEffect(() => {
-    if (!blog) return;
     const fetchLikes = async () => {
       try {
-        const res = await axios.get(`${BACKEND_URL}/api/v1/like/${blog.id}`);
+        const res = await axios.get(`${BACKEND_URL}/api/v1/like/${blog.id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         setLike(res.data.totalLikes);
         setLikedByUser(res.data.likedbyUser);
       } catch (error) {
@@ -42,8 +45,6 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
     fetchLikes();
   }, [blog]);
 
-  if (!blog) return <div className="text-white">No blog data available.</div>;
-  // Handle like/unlike
   const handleLikeClick = async () => {
     if (likeLoading) return;
     const userId = localStorage.getItem("userId");
@@ -64,76 +65,120 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
       );
       setLike(res.data.totalLikes);
       setLikedByUser(res.data.likedbyUser);
-      setError(null);
     } catch (error: unknown) {
-      console.error("Error updating like:", error);
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.error || "Failed to update like");
-      } else {
-        setError("Failed to update like");
-      }
+      setError("Failed to update like");
     } finally {
       setLikeLoading(false);
     }
   };
-  const {
-    author,
-    title,
-    content,
-    createdAt,
-    images,
-    tag = "General",
-  } = blog;
+
+  const { author, title, content, createdAt, images, tag = "General" } = blog;
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10 py-8 text-gray-100">
-      <div className="flex flex-col lg:flex-row justify-between gap-8 border-b border-gray-700 pb-8 mb-8 bg-gray-900 rounded-2xl shadow-lg shadow-violet-500/10 p-6 lg:p-8">
-        {error && (
-          <div className="text-red-400 text-sm mb-2">{error}</div>
-        )}
-        {/* Blog Content */}
-        <div className="flex-1 min-w-0 lg:min-w-[500px]">
-          <h1 className="min-h[60] text-4xl lg:text-5xl font-bold text-blue-300 mb-4 break-words">
-            {title}
-          </h1>
-          <p className="text-sm text-gray-400 mb-6">Posted on {createdAt.slice(0,10)}</p>
+      <div className="bg-gray-900 rounded-2xl shadow-lg shadow-violet-500/10 p-6 lg:p-10 max-w-screen-xl mx-auto">
+        <section className="text-gray-100">
+          {error && (
+            <div className="text-red-400 text-sm mb-4 text-center">{error}</div>
+          )}
 
-          <p className="text-lg lg:text-xl text-gray-200 leading-relaxed whitespace-pre-line break-words">
-            {content}
-          </p>
+          {/* Blog Header */}
+          <header className="mb-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+              {title}
+            </h1>
+            <div className=" mr-20 flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm text-gray-400 space-y-2 sm:space-y-0">
+              <span>Published on {createdAt.slice(0, 10)}</span>
+              <div className="flex items-center gap-2">
+                <span className="bg-green-600 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-white">
+                  {tag}
+                </span>
+             
+              </div>
+            </div>
+          </header>
 
-          {/* Tags and Read Time */}
-          <div className="flex items-center gap-3 text-sm mt-8 flex-wrap">
-            <span className="bg-green-700 text-green-200 px-3 py-1 rounded-full font-medium">
-              {tag}
-            </span>
-            <span className="text-gray-400">
-              {Math.ceil(content.length / 300)} min read
-            </span>
+          {/* Author */}
+          <div className="flex items-center gap-4 mb-10 border-b border-gray-700 pb-6">
+            <img
+              src={author?.profileImg}
+              alt="Author"
+              className="w-12 h-12 rounded-full border border-indigo-500 object-cover"
+            />
+            <div>
+              <p className="text-white font-semibold text-lg">{author?.name}</p>
+              <p className="text-gray-400 text-sm">
+                Digital storyteller, code whisperer & life-long learner.
+              </p>
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-6 flex flex-wrap gap-4 text-base">
+          {/* Content */}
+          <article className="prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed mb-12">
+            <p className="whitespace-pre-line">{content}</p>
+          </article>
+
+
+          {/* Image Gallery */}
+          {Array.isArray(images) && images.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+              {images.map((img, index) => (
+                <div
+                  key={index}
+                  onClick={() => setSelectedImage(img)}
+                  className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-800 border border-gray-700 cursor-pointer shadow-md hover:shadow-lg hover:scale-[1.02] transition-transform duration-300"
+                >
+                  <img
+                    src={img}
+                    alt={`Blog image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Modal */}
+          {selectedImage && (
+            <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+              <div className="relative w-full max-w-5xl h-[80vh]">
+                <img
+                  src={selectedImage}
+                  alt="Preview"
+                  className="w-full h-full object-contain rounded-lg"
+                />
+                <button
+                  className="absolute top-4 right-2 text-white bg-blue-600 hover:bg-blue-500 p-2 rounded-full"
+                  onClick={() => setSelectedImage(null)}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+          )}
+          {/* Actions */}
+          <div className="flex flex-wrap gap-6 mb-12">
             <button
               onClick={handleLikeClick}
               disabled={likeLoading}
-              className={`flex items-center gap-1 ${
+              className={`flex items-center gap-2 text-base transition ${
                 likeLoading
                   ? "text-gray-500"
                   : likedbyUser
                   ? "text-blue-400 hover:text-blue-300"
-                  : "text-blue-300 hover:text-blue-300"
-              } transition-colors`}
-              aria-label="Like this post"
+                  : "text-blue-300 hover:text-blue-200"
+              }`}
             >
               <ThumbsUp
-                className="w-4 h-4"
+                className="w-5 h-5"
                 strokeWidth={likedbyUser ? 1.5 : 2}
-                fill={likedbyUser ? "#60a5fa" : "none"} // blue-400 fill if liked
+                fill={likedbyUser ? "#60a5fa" : "none"}
               />
               {like}
             </button>
-            <button className="flex items-center gap-2 text-violet-400 hover:text-violet-300 transition">
+            <button className="flex items-center gap-2 text-violet-400 hover:text-violet-300 transition" onClick={() => {
+              
+            }}>
               <MessageCircle className="w-5 h-5" />
               Comment
             </button>
@@ -142,64 +187,8 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
               Share
             </button>
           </div>
-        </div>
-
-        {/* Author Section */}
-        <div className="min-w-full lg:min-w-[260px] border-t lg:border-t-0 lg:border-l border-gray-700 pt-6 lg:pt-0 lg:pl-8">
-          <p className="text-sm text-gray-400 mb-2">Author</p>
-          <div className="flex items-center gap-4">
-            <img
-                src={author?.profileImg}
-                alt="Author"
-                className="w-12 h-12 rounded-full border border-violet-500"
-            />
-            <div>
-              <h3 className="text-xl font-semibold text-white">{author?.name}</h3>
-              <p className="text-gray-400 text-sm">
-                Master of mirth, purveyor of puns, and the funniest person in the kingdom.
-              </p>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
-
-      {/* Image Gallery */}
-      {Array.isArray(images) && images.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
-          {images.map((img, index) => (
-            <div
-              key={index}
-              className="relative w-full aspect-video bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-700 cursor-pointer"
-              onClick={() => setSelectedImage(img)}
-            >
-              <img
-                src={img}
-                alt={`Blog Image ${index + 1}`}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Image Modal */}
-      {selectedImage && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
-          <div className="relative w-[80vw] max-w-5xl h-[80vh]">
-            <img
-              src={selectedImage}
-              alt="Preview"
-              className="w-full h-full object-contain rounded-lg shadow-xl"
-            />
-            <button
-              className="absolute top-2 right-2 text-white bg-red-600 hover:bg-red-500 p-1 rounded-full"
-              onClick={() => setSelectedImage(null)}
-            >
-              <X size={20} />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

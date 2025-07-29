@@ -37,6 +37,8 @@ export const BlogCard = ({
   const [likedbyUser, setLikedByUser] = useState<boolean>(false);
   const [like, setLike] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const [comment, setComment] = useState<number>(0);
+
   const navigate = useNavigate();
 
   // Fetch initial likes
@@ -54,7 +56,28 @@ export const BlogCard = ({
       }
     };
     fetchLikes();
+
+
   }, [id]);
+
+  // Fetch initial comments
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/api/v1/comment/${id}`,{
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setComment(res.data.totalComments);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        setError("Failed to load comments");
+      }
+    };
+    fetchComments();
+
+
+  }, [id]);
+
 
  
   // Handle like/unlike
@@ -165,12 +188,15 @@ export const BlogCard = ({
           </button>
 
           <button
-            className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+            className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
             aria-label="Comment on this post"
-            disabled // Placeholder until implemented
+          
+            onClick={()=>{
+              navigate(`/blog/${id}`, { state: { id } });
+            }} // Navigate to comments section
           >
             <MessageCircle className="w-4 h-4" />
-            Comment
+            {comment}
           </button>
           <button
             className="flex items-center gap-1 text-purple-400 hover:text-purple-300 transition-colors"
