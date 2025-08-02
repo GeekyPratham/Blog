@@ -127,12 +127,28 @@ commentRouter.post('/:blogId',async(c)=>{
                 postId: postId,
                 userId: userId,
             
+            },
+            select:{
+                id: true,
+                content: true,
+                createdAt: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profileImg: true,
+                    }
+                }
             }
         })
-
+        const totalComments = await prisma.comment.count({
+            where: { postId: postId },
+        });
+        console.log("Total comments for post:", totalComments);
         return c.json({
             comment: comment,
-            msg: "Comment added successfully"
+            msg: "Comment added successfully",
+            totalComments
         })
     }
     catch(error){
