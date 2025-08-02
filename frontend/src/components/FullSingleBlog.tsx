@@ -1,8 +1,8 @@
 import { useState , useEffect } from "react";
-import { ThumbsUp, MessageCircle, Share2, X } from "lucide-react";
+import { ThumbsUp, MessageCircle, X } from "lucide-react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
-
+import { UseComments } from "../hooks/UseComments";
 
 interface FullSingleBlogProps {
   blog: {
@@ -25,6 +25,8 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
   const [like, setLike] = useState(0);
   const [likedbyUser, setLikedByUser] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { loading, comments,commentCount } = UseComments(blog.id);
 
 
   useEffect(() => {
@@ -180,15 +182,107 @@ export const FullSingleBlog = ({ blog }: FullSingleBlogProps) => {
               
             }}>
               <MessageCircle className="w-5 h-5" />
-              Comment
+              {commentCount}
             </button>
-            <button className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition">
-              <Share2 className="w-5 h-5" />
-              Share
-            </button>
+            
           </div>
+
+          {/* Comments Section */}
+          {loading ?(
+            <div>
+                <div>Please Wait comment is loading...</div>
+                
+            </div>
+          ):(
+            <div>
+             
+              <div className="mt-8">
+              
+                {comments.length > 0 ? (
+                  <ul className="space-y-2">
+                    {comments.reverse().map((comment) => (
+                      <li key={comment.id} className="bg-gray-800 p-2 rounded-lg shadow-md">
+                        <div className="flex items-center gap-3 mb-2">
+                          <img
+                            src={comment.user.profileImg || "/default-profile.png"}
+                            alt={comment.user.name}
+                            className="w-4 h-4 rounded-full"
+                          />
+                          <span className="font-semibold text-gray-200">{comment.user.name}</span>
+                          <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-gray-300">{comment.content}</p>
+                        
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400">No comments yet. Be the first to comment!</p>
+                )}
+              </div>
+             
+            </div>
+          )}
+           <CommentInput blogId={blog.id} />
         </section>
       </div>
     </div>
   );
 };
+
+function  CommentInput({ blogId }: { blogId: string }) {
+  const[comment,setComment]=useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  return (
+    <div className="mt-8">
+   
+      <textarea
+        className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Write a comment..."
+        value={comment}
+        onChange={e => setComment(e.target.value)}
+      />
+      <button 
+        disabled={loading}
+        className={`mt-3 px-4 py-2 text-white rounded-lg transition ${
+          loading ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-blue-500"
+        }`} 
+        onClick={(e)=>{
+          e.preventDefault();
+          if(loading) return;
+          console.log("Comment to post:", comment);
+          if(!comment.trim()) {
+            alert("Comment cannot be empty");
+            return;
+          }
+          setLoading(true);
+          
+          axios.post(`${BACKEND_URL}/api/v1/comment/${blogId}`, {
+            content: comment,
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem("token")}`
+            }
+          })
+          .then(res => {
+            console.log("Comment posted successfully:", res.data);
+            setComment("");
+            setLoading(false);
+          })
+          .catch(error=>{
+            console.error("Failed to post comment:", error.response?.data || error.message);
+            setLoading(false);
+          })
+          .finally(() => {
+            setLoading(false);// reset loading whether success or failure
+          });
+          
+
+        }}>
+        {loading ? "Posting..." : "Post Comment"}
+      </button>
+    </div>
+  );
+}

@@ -1,6 +1,6 @@
 import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
 
@@ -40,12 +40,12 @@ export const BlogCard = ({
   const [comment, setComment] = useState<number>(0);
 
   const navigate = useNavigate();
+  const optionsRef = useRef<HTMLDivElement>(null);
 
-  // Fetch initial likes
   useEffect(() => {
     const fetchLikes = async () => {
       try {
-        const res = await axios.get(`${BACKEND_URL}/api/v1/like/${id}`,{
+        const res = await axios.get(`${BACKEND_URL}/api/v1/like/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setLike(res.data.totalLikes);
@@ -56,15 +56,12 @@ export const BlogCard = ({
       }
     };
     fetchLikes();
-
-
   }, [id]);
 
-  // Fetch initial comments
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`${BACKEND_URL}/api/v1/comment/${id}`,{
+        const res = await axios.get(`${BACKEND_URL}/api/v1/comment/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setComment(res.data.totalComments);
@@ -74,13 +71,8 @@ export const BlogCard = ({
       }
     };
     fetchComments();
-
-
   }, [id]);
 
-
- 
-  // Handle like/unlike
   const handleLikeClick = async () => {
     if (likeLoading) return;
     const userId = localStorage.getItem("userId");
@@ -116,17 +108,15 @@ export const BlogCard = ({
 
   if (loading) {
     return (
-      <div className="border border-gray-800 p-4 sm:p-6 rounded-xl bg-gray-900 text-gray-100 shadow-lg hover:shadow-purple-400/30 transition-all duration-300 flex items-center justify-center">
+      <div className="border border-gray-800 p-4 rounded-xl bg-gray-900 text-gray-100 flex items-center justify-center">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="border border-gray-800 p-4 sm:p-6 rounded-xl bg-gray-900 text-gray-100 shadow-lg hover:shadow-purple-400/30 transition-all duration-300">
-      {error && (
-        <div className="text-red-400 text-sm mb-2">{error}</div>
-      )}
+    <div className="relative border border-gray-800 p-4 sm:p-6 rounded-xl bg-gray-900 text-gray-100 shadow-lg hover:shadow-purple-400/30 transition-all duration-300">
+      {error && <div className="text-red-400 text-sm mb-2">{error}</div>}
       <Link to={`/blog/${id}`} state={{ id }} className="block">
         <div className="w-full flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="w-full sm:w-1/2 p-2 flex-1 flex flex-col gap-3">
@@ -147,9 +137,7 @@ export const BlogCard = ({
               {content.substring(0, 200) + "..."}
             </p>
             <div className="flex items-center flex-wrap gap-3 text-xs sm:text-sm mt-2">
-              <span className="bg-green-700 text-green-200 px-2 py-1 rounded-full font-medium">
-                {tag || "No Tag"}
-              </span>
+              <span className="bg-green-700 text-green-200 px-2 py-1 rounded-full font-medium">{tag || "No Tag"}</span>
               <span className="text-gray-400">{Math.ceil(content.length / 300)} min read</span>
             </div>
           </div>
@@ -165,7 +153,8 @@ export const BlogCard = ({
           )}
         </div>
       </Link>
-      <div className="flex flex-col sm:flex-row items-center justify-between w-full mt-4 pt-4 border-t border-gray-700">
+
+      <div className="flex items-center justify-between w-full mt-4 pt-4 border-t border-gray-700">
         <div className="flex flex-wrap gap-4 text-sm">
           <button
             onClick={handleLikeClick}
@@ -177,97 +166,88 @@ export const BlogCard = ({
                 ? "text-blue-400 hover:text-blue-300"
                 : "text-blue-300 hover:text-blue-300"
             } transition-colors`}
-            aria-label="Like this post"
           >
-            <ThumbsUp
-              className="w-4 h-4"
-              strokeWidth={likedbyUser ? 1.5 : 2}
-              fill={likedbyUser ? "#60a5fa" : "none"} // blue-400 fill if liked
-            />
+            <ThumbsUp className="w-4 h-4" strokeWidth={likedbyUser ? 1.5 : 2} fill={likedbyUser ? "#60a5fa" : "none"} />
             {like}
           </button>
 
           <button
-            className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
-            aria-label="Comment on this post"
-          
-            onClick={()=>{
-              navigate(`/blog/${id}`, { state: { id } });
-            }} // Navigate to comments section
+            className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+            onClick={() => navigate(`/blog/${id}`, { state: { id } })}
           >
             <MessageCircle className="w-4 h-4" />
             {comment}
           </button>
-          <button
-            className="flex items-center gap-1 text-purple-400 hover:text-purple-300 transition-colors"
-            aria-label="Share this post"
-          >
+
+          <button className="flex items-center gap-1 text-purple-400 hover:text-purple-300 transition-colors">
             <Share2 className="w-4 h-4" />
             Share
           </button>
         </div>
-        {type === "Myposts" && !options && (
-          <button
-            onClick={() => setOptions(true)}
-            className="text-gray-500 hover:text-gray-400 transition-colors cursor-pointer p-2 rounded-full hover:bg-gray-800"
-            aria-label="More options"
-          >
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
-        )}
-        {options && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div
-              className="bg-green-700 rounded-lg shadow-lg p-5 w-48 sm:w-52 text-white transform scale-95 sm:scale-100 transition-all duration-300"
+
+        {type === "Myposts" && (
+          <div className="relative">
+            <button
+              onClick={() => setOptions(!options)}
+              className="text-gray-500 hover:text-gray-400 transition-colors cursor-pointer p-2 rounded-full hover:bg-gray-800"
             >
-              <X
-                size={20}
-                className="absolute top-2 right-2 bg-green-600 text-white rounded-full p-0.5 cursor-pointer hover:bg-red-500"
-                onClick={() => setOptions(false)}
-              />
-              <div className="flex flex-col items-center gap-2">
-                <button
-                  className="cursor-pointer hover:underline w-full text-center"
-                  onClick={async () => {
-                    setLoading(true);
-                    try {
-                      const res = await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                      });
-                      navigate('/publish', { state: { blog: res.data.blog } });
-                    } catch (error) {
-                      console.error("Error fetching blog:", error);
-                      setError("Failed to load blog for editing");
-                    } finally {
-                      setLoading(false);
-                      setOptions(false);
-                    }
-                  }}
-                >
-                  Edit Blog
-                </button>
-                <button
-                  className="cursor-pointer hover:underline w-full text-center"
-                  onClick={async () => {
-                    setLoading(true);
-                    try {
-                      await axios.delete(`${BACKEND_URL}/api/v1/blog/delete/${id}`, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                      });
-                      onDelete?.(id);
-                    } catch (error) {
-                      console.error("Error deleting blog:", error);
-                      setError("Failed to delete blog");
-                    } finally {
-                      setLoading(false);
-                      setOptions(false);
-                    }
-                  }}
-                >
-                  Delete
-                </button>
+              <MoreHorizontal className="w-5 h-5" />
+            </button>
+
+            {options && (
+              <div
+                ref={optionsRef}
+                className="absolute right-full mr-4 top-0 bg-green-700 rounded-lg shadow-lg p-3 w-30 text-white z-10"
+              >
+                <X
+                  size={18}
+                  className="absolute -top-2 -right-2 bg-green-600 text-white rounded-full p-0.5 cursor-pointer hover:bg-red-500"
+                  onClick={() => setOptions(false)}
+                />
+                <div className="flex flex-col gap-2">
+                  <button
+                    className="cursor-pointer hover:underline text-left"
+                    onClick={async () => {
+                      setLoading(true);
+                      try {
+                        const res = await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+                          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                        });
+                        navigate("/publish", { state: { blog: res.data.blog } });
+                      } catch (error) {
+                        console.error("Error fetching blog:", error);
+                        setError("Failed to load blog for editing");
+                      } finally {
+                        setLoading(false);
+                        setOptions(false);
+                      }
+                    }}
+                  >
+                    Edit Blog
+                  </button>
+                  <button
+                    className="cursor-pointer hover:underline text-left"
+                    onClick={async () => {
+                      setLoading(true);
+                      try {
+                        await axios.delete(`${BACKEND_URL}/api/v1/blog/delete/${id}`, {
+                          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                        });
+                        onDelete?.(id);
+                      } catch (error) {
+                        console.error("Error deleting blog:", error);
+                        setError("Failed to delete blog");
+                      } finally {
+                        setLoading(false);
+                        setOptions(false);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

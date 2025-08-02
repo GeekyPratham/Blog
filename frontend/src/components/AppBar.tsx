@@ -21,7 +21,7 @@ export const AppBar = () => {
         <button className="bg-green-600 hover:bg-green-500 text-white text-sm px-4 py-1.5 rounded-full transition font-medium shadow-md" onClick={()=>{
           navigate("/publish")
         }}>
-          Published
+          Post Blog
         </button>
         <img
           src={localStorage.getItem("profileImg")||"https://res.cloudinary.com/db0hcdu39/image/upload/v1745947431/iiem9tlkzzui2djbo9nk.jpg"}

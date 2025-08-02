@@ -78,7 +78,7 @@ export const Mypost = () => {
       <AppBar/>
       <h1 className="text-4xl font-bold text-blue-300 text-center">My Blogs</h1>
       <div className="flex flex-col gap-8 items-center w-full">
-        {myBlogs.map((blog) => (
+        {myBlogs.reverse().map((blog) => (
           <div key={blog.id} className="w-full max-w-4xl">
             <BlogCard
               id={blog.id}
