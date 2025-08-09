@@ -4,6 +4,7 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign,verify,decode } from 'hono/jwt';
 import { authMiddleware } from '../middlewares/auth';
 import { createBlogInputs , updateBlogInputs } from '@geekypratham/blog-common';
+import { logger } from 'hono/logger';
 
 export const blogRouter = new Hono<{
   Bindings:{
@@ -193,9 +194,16 @@ blogRouter.delete('/delete/:blogid',async(c)=>{
 
 // pagination ->in landing page only shows 10 blogs only after scroll or clicking on button then show next 10 
 
-blogRouter.get('/bulk', async(c) => {
+blogRouter.get('/bulk/', async(c) => {
+
   console.log("inside blog bulk route");
-  
+
+  const page = c.req.query('page')|| '1' ; // default to page 1 if not provided
+  console.log("page number", page);
+  console.log(typeof page);
+  const pageNo = parseInt(page, 10);
+  console.log(pageNo);
+
   // console.log("token", c.req.header('Authorization'));
 
   const prisma = new PrismaClient({
@@ -204,7 +212,14 @@ blogRouter.get('/bulk', async(c) => {
   }).$extends(withAccelerate());
 
   const posts = await prisma.post.findMany(
-    {
+    { 
+      
+      skip: (pageNo - 1) * 5,
+      take: 5,
+      orderBy: {
+        createdAt: 'desc'
+      },
+          
       select: {
         title: true,
         content: true,
@@ -223,12 +238,19 @@ blogRouter.get('/bulk', async(c) => {
       }
     }
   );
-
+  let message;
+  if(posts.length>1){
+    message = "Blogs send to frontend";
+  }
+  else message = "No blogs present"
   return c.json({
-    posts
+    posts,
+    pageNo: pageNo,
+    message,
   })
 })
 
+// Get a single blog post by ID
 blogRouter.get('/:id',async (c) => {
   const body =  c.req.param('id');
   console.log("body", body);

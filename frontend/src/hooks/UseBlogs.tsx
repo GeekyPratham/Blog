@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../../config';
 
+
 interface BlogCardProps {
   id : string,
   author: {
@@ -14,6 +15,7 @@ interface BlogCardProps {
   createdAt: string;
   images?: string[];
   tag?: string;
+  pageNo?: number;
 }
 
 
@@ -27,6 +29,8 @@ export const useBlog = ( id:string ) =>{
     console.log("id")
     console.log(`${id}`)
     console.log(`${BACKEND_URL}/api/v1/blog/${id}`)
+
+    
     useEffect(() => {
         axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
             headers: {
@@ -58,15 +62,19 @@ export const useBlog = ( id:string ) =>{
 
     }
 }
-export const useBlogs = () =>{
 
+export const useBlogs = ( pageNo:number  ) =>{
+
+    console.log(pageNo)
+   
     const [loading, setLoading] = useState<boolean>(true);
     const [blogs,setBlogs] = useState<BlogCardProps[]>([]);
     console.log(blogs)
     console.log("hello from useBlogs hook");
-
+    console.log("pageNo", pageNo);
     useEffect(  ()=>{
-        axios.get(`${BACKEND_URL}/api/v1/blog/bulk`,{
+        // const pageCount = (pageNo>0)?pageNo:1;
+        axios.get(`${BACKEND_URL}/api/v1/blog/bulk/?page=${pageNo}`,{
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem("token")}` // Uncomment if you need to send a token
@@ -78,12 +86,13 @@ export const useBlogs = () =>{
             setLoading(false);
         }) 
             
-    },[])
+    },[pageNo]);
     
 
     return {
         loading,
         blogs,
+       
 
     }
 }
