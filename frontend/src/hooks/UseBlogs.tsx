@@ -62,8 +62,39 @@ export const useBlog = ( id:string ) =>{
 
     }
 }
+export const useBlogs = ( ) =>{
 
-export const useBlogs = ( pageNo:number  ) =>{
+ 
+
+    const [loading, setLoading] = useState<boolean>(true);
+    const [blogs,setBlogs] = useState<BlogCardProps[]>([]);
+    console.log(blogs)
+    console.log("hello from useBlogs hook");
+  
+    useEffect(  ()=>{
+        axios.get(`${BACKEND_URL}/api/v1/blog/bulk/`,{
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("token")}` // Uncomment if you need to send a token
+            }
+        })
+        .then(res => {
+            console.log("Blogs fetched successfully:", res.data.posts);
+            setBlogs(res.data.posts);
+            
+            setLoading(false);
+        }) 
+            
+    },[]);
+    
+
+    return {
+        loading,
+        blogs,
+
+    }
+}
+export const useBlogswithPage = ( pageNo:number  ) =>{
 
     console.log(pageNo)
    
@@ -96,3 +127,4 @@ export const useBlogs = ( pageNo:number  ) =>{
 
     }
 }
+
