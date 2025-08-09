@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppBar } from "../components/AppBar";
 import { BlogCard } from "../components/BlogCard";
 import { BlogSkeleton } from "../components/BlogSkeleton";
-import { useBlogs } from "../hooks/UseBlogs";
+import { useBlogswithPage } from "../hooks/UseBlogs";
 import { useEffect,useState } from "react";
 
 
@@ -11,7 +11,7 @@ export const Blogs = () => {
   const [pageNo, setPageNo] = useState<number>(1); // default page number
   console.log("inside blogs page:");
   console.log(pageNo)
-  const { loading, blogs } = useBlogs(pageNo);
+  const { loading, blogs } = useBlogswithPage(pageNo);
   const [buttonLoadingNext, setButtonLoadingNext] = useState<boolean>(false);
   const [buttonLoadingPrev, setButtonLoadingPrev] = useState<boolean>(false);
   
