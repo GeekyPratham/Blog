@@ -1,4 +1,4 @@
-# 📰 Full Stack Blog Platform
+# 📰 Full Stack Blog Platform               
 
 This repository contains a modern, full-stack blog platform built with:
 
@@ -35,6 +35,6 @@ This repository contains a modern, full-stack blog platform built with:
 
 ## 📚 About
 
-Backend: Handles authentication, blog CRUD, and serves as an API for the frontend. Built for edge/serverless deployment.
+Backend: Handles authentication, blog CRUD, and serves as an API for the frontend. 
 
 Frontend: Modern, responsive UI for users to read, write, and manage blogs.
