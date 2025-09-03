@@ -3,7 +3,7 @@
 This repository contains a modern, full-stack blog platform built with:
 
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS
-- **Backend:** Hono (Edge-first), Prisma (Edge Client), PostgreSQL, JWT Auth, Cloudflare Workers
+- **Backend:** Express, Prisma (Edge Client), PostgreSQL, JWT Auth
 
 ---
 
