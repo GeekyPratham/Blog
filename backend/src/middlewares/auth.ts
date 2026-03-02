@@ -36,6 +36,7 @@ export const authMiddleware : MiddlewareHandler = async (c,next) => {
                 message: 'Invalid token provided.',
             }, 401);
         }
+        console.log("hlw");
         c.set("userId", user.id);
      
         return await next();

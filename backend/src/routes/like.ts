@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
+import { Prisma } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { authMiddleware } from '../middlewares/auth';
 
@@ -70,82 +71,62 @@ likeRouter.get('/:blogId', async (c) => {
     }
 });
 
-// POST: Update like (like/unlike)
+
+// POST: Update like (toggle like/unlike)
 likeRouter.post('/updateLike/:blogId/:userId', async (c) => {
-    const { blogId, userId } = c.req.param();
-    console.log("blogId:", blogId, "userId:", userId);
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-        
-    }).$extends(withAccelerate());
+  const { blogId, userId } = c.req.param()
 
-  console.log("after connecting to db");
-    try {
-        // Validate UUIDs
-        if (!uuidRegex.test(blogId) || !uuidRegex.test(userId)) {
-            return c.json({ error: "Invalid blog ID or user ID format" }, 400);
-        }
+  const prisma = new PrismaClient({ datasourceUrl: c.env.DATABASE_URL }).$extends(withAccelerate())
 
-        // Verify post and user exist
-        const postExists = await prisma.post.findUnique({
-            where: { id: blogId },
-            select: { id: true },
-        });
-        if (!postExists) {
-            return c.json({ error: "Post not found" }, 404);
-        }
-        const userExists = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { id: true },
-        });
-        if (!userExists) {
-            return c.json({ error: "User not found" }, 404);
-        }
+  try {
+    //  Wrap everything inside a single transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Check if user already liked this blog
+      const alreadyLiked = await tx.like.findUnique({
+        where: { postId_userId: { postId: blogId, userId: userId } },
+      })
 
-        // Check authentication 
-        const authHeader = c.req.header('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return c.json({ error: "Unauthorized" }, 401);
-        }
+      let likedbyUser = false
 
-        // Add JWT verification logic here
-        
-
-        const alreadyLiked = await prisma.like.findFirst({
-            where: { postId: blogId, userId: userId },
-        });
-        let likedbyUser = false;
-        if (alreadyLiked) {
-            await prisma.like.delete({
-                where: {
-                    postId_userId: { postId: blogId, userId: userId },
-                },
-            });
-            const totalLikes = await prisma.like.count({
-                where: { postId: blogId },
-            });
-            return c.json({
-                msg: "Like removed successfully",
-                totalLikes,
-                likedbyUser
-            });
-        }
-
-        const newLike = await prisma.like.create({
+      if (alreadyLiked) {
+        // If already liked → remove it (unlike)
+        await tx.like.delete({
+          where: { postId_userId: { postId: blogId, userId: userId } },
+        })
+      } else {
+        // If not liked → add like
+        try {
+          await tx.like.create({
             data: { postId: blogId, userId: userId },
-        });
-        
-        const totalLikes = await prisma.like.count({
-            where: { postId: blogId },
-        });
-        likedbyUser = true;
-        return c.json({
-            msg: "Like added successfully",
-            totalLikes,
-            likedbyUser
-        });
-    } catch (error) {
-        console.error("Error updating like:", error);
-        return c.json({ error: "Internal server error" }, 500);
-    }
-});
+          })
+          likedbyUser = true
+        } catch (err) {
+          // Handle unique constraint race condition inside transaction
+          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            likedbyUser = true
+          } else {
+            throw err
+          }
+        }
+      }
+
+      // Count likes (still inside the same transaction → guaranteed fresh value)
+      const totalLikes = await tx.like.count({
+        where: { postId: blogId },
+      })
+
+      // Return combined result
+      return { likedbyUser, totalLikes }
+    })
+
+    //  Send back response after transaction commits
+    return c.json({
+      msg: result.likedbyUser ? "Like added successfully" : "Like removed successfully",
+      totalLikes: result.totalLikes,
+      likedbyUser: result.likedbyUser,
+    })
+  } catch (error) {
+    console.error("Error updating like:", error)
+    return c.json({ error: "Internal server error" }, 500)
+  }
+})

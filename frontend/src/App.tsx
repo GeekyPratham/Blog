@@ -7,7 +7,6 @@ import { Blogs } from './pages/Blogs';
 import { Publish } from './pages/Publish';
 import { Mypost } from './pages/Mypost';
 import { Editprofile } from './pages/Editprofile';
-
 const App = () => {
   return (
     <BrowserRouter> 

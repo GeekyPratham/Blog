@@ -31,7 +31,7 @@ export const Blog = () =>{
     console.log("Blog route page");
     console.log(blog);
     return (
-            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-4 sm:p-6 md:p-10 overflow-x-hidden">
+            <div className="min-h-screen flex flex-col gap-6 text-white bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 p-1 sm:p-3 md:p-6 overflow-x-hidden">
                 
                 <div className="overflow-hidden">
                     <AppBar/>

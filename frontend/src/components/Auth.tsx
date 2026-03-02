@@ -11,6 +11,9 @@ import { ClipLoader } from "react-spinners";
 
 export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
 
+    console.log("hello from auth component");
+    // console.log(SigninInput);
+
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const [loading,setLoading] = useState<boolean>(false);
@@ -77,7 +80,7 @@ export const Auth = ({type}:{type:"Signup" | "Signin"}) => {
             setLoading(true);
             const schema = type === "Signup" ? signupInputs : signinInputs;
             const result = schema.safeParse(postInputs);// Validate the data using Zod does not need to send request to backend for validation
-
+            console.log("Validation result:", result);
             if (!result.success) { 
               setError(result.error.issues[0].message);
               // alert("incorrect user details");

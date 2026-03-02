@@ -5,11 +5,14 @@ import { sign,verify,decode } from 'hono/jwt';
 import { authMiddleware } from '../middlewares/auth';
 import { createBlogInputs , updateBlogInputs } from '@geekypratham/blog-common';
 import { logger } from 'hono/logger';
+import { Param } from '@prisma/client/runtime/library';
+
 
 export const blogRouter = new Hono<{
   Bindings:{
     DATABASE_URL: string,
     JWT_SECRET: string,
+    GROQ_API_KEY:string,
   }
   Variables:{
     userId : string,
@@ -296,8 +299,48 @@ blogRouter.get('/:id',async (c) => {
   
 })
 
+blogRouter.post("/summary", async (c) => {
 
+  console.log("inside summary route");
+  try {
+    const { prompt, content } = await c.req.json();
+    console.log(prompt)
+    
+    if (!prompt || !content) {
+      return c.json({ error: "Both prompt and content are required." }, 400);
+    }
 
+    // Call Groq API for summarization
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${c.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: "You are a summarization assistant. Summarize content according to the given prompt.",
+          },
+          {
+            role: "user",
+            content: `${prompt}\n\nBlog content:\n${content}`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      }),
+    });
 
-
-
+    const data = await response.json();
+    console.log(data);
+    return c.json({
+      summary: data.choices?.[0]?.message?.content || "No summary generated.",
+    });
+  } catch (error) {
+    console.error("Groq API Error:", error);
+    return c.json({ error: "Failed to summarize content" }, 500);
+  }
+});
